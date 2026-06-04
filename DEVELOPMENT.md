@@ -49,3 +49,29 @@ existing `skate board 1` art pack + imported UI mocks in `Assets/Art/UI/`.
 - All gameplay tuning via serialized fields / ScriptableObjects.
 - No hard-coded ad SDK; everything behind IAdService.
 - Editor + device input both supported.
+
+## BUILD STATUS — autonomous run (milestones 1–11 complete)
+All milestones implemented, integration-tested in play mode (no errors/exceptions),
+and committed on branch `game-development`. Full flow verified:
+Boot → MainMenu → CharacterSelect → BoardSelect → Cutscene → Loading → Game → Results.
+
+Done: 1 Foundation · 2 Core race · 3 AI/ranking · 4 Boosters/obstacles ·
+5 HUD · 6 Front-end flow · 7 Selection · 8 Persistence/economy ·
+9 Track interactions · 10 Cutscene · 11 Results.
+
+### NEEDS YOUR ATTENTION (intentionally left for you)
+- **Character models:** only CHART_1 & CHART_2 read clearly as girls; CHART_3 (orange
+  hoodie, "Girl 3") reads male. Default is now a clear girl. Swap the 3rd model by
+  changing `Assets/_Game/Data/Characters/Girl 3.asset` → modelPrefab. Whole system is
+  data-driven so it's a one-field change.
+- **Animations:** characters are in T-pose. Animator hooks exist in SkaterController
+  (Speed/Grounded/Jump params) and RiderVisual exposes the spawned Animator — drop in
+  your clips + an Animator Controller.
+- **Ads SDK:** all "watch ad" buttons + reward logic run through `AdManager`/`IAdService`
+  (currently `StubAdService` grants instantly). Implement `IAdService` with your SDK and
+  call `AdManager.SetService(...)` at boot.
+- **Polish:** race path is auto-generated from road meshes (v1, good but refinable);
+  cutscene staging is simple (DRAW.fbx is a flat tile, not a full room); booster/obstacle
+  art uses placeholder primitives (swap for cones/barricades from the asset pack);
+  stats bars on character select are decorative.
+- **Audio:** AudioManager exists with hooks; assign clips.
