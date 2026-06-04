@@ -127,7 +127,7 @@ namespace Mixtape.UI
         {
             if (Unlocked(_index)) SetSelected(_index);
             if (mode == Mode.Character) SceneFlow.LoadDirect(SceneFlow.BoardSelect);
-            else SceneFlow.LoadVia(SceneFlow.Game);
+            else SceneFlow.LoadDirect(SceneFlow.Cutscene);
         }
 
         public void Back()

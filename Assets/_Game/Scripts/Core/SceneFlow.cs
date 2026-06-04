@@ -9,6 +9,7 @@ namespace Mixtape.Core
         public const string MainMenu = "MainMenu";
         public const string CharacterSelect = "CharacterSelect";
         public const string BoardSelect = "BoardSelect";
+        public const string Cutscene = "Cutscene";
         public const string Game = "Game";
         public const string Loading = "Loading";
 

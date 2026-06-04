@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Girl 3
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Data.CharacterDef
   displayName: Girl 3
-  modelPrefab: {fileID: 919132149155446097, guid: e0450e3b18d1e784a9421f389ad3b6d4, type: 3}
+  modelPrefab: {fileID: 919132149155446097, guid: 4504f8883d909774f92232fb21a7e448, type: 3}
   portrait: {fileID: 0}
   price: 250
   unlockableByAd: 1

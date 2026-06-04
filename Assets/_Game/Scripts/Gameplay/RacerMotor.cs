@@ -40,6 +40,8 @@ namespace Mixtape.Gameplay
         private float _speed;
         private float _speedBoostMul = 1f;
         private float _boostTimer;
+        private float _penaltyMul = 1f;
+        private float _penaltyTimer;
         private float _verticalVel;
         private int _jumpsUsed;
         private bool _running;
@@ -48,7 +50,7 @@ namespace Mixtape.Gameplay
         public bool IsFinished => path != null && path.IsValid && distance >= path.TotalLength - 0.05f;
         public float Distance => distance;
         public float NormalizedProgress => (path != null && path.TotalLength > 0f) ? Mathf.Clamp01(distance / path.TotalLength) : 0f;
-        public float CurrentSpeed => _speed * _speedBoostMul;
+        public float CurrentSpeed => _speed * _speedBoostMul * _penaltyMul;
 
         public void SetRunning(bool running) => _running = running;
 
@@ -63,6 +65,8 @@ namespace Mixtape.Gameplay
             _speed = 0f;
             _speedBoostMul = 1f;
             _boostTimer = 0f;
+            _penaltyMul = 1f;
+            _penaltyTimer = 0f;
             Apply(instant: true);
         }
 
@@ -81,6 +85,13 @@ namespace Mixtape.Gameplay
             _boostTimer = Mathf.Max(_boostTimer, duration);
         }
 
+        /// <summary>Temporarily slow the racer (e.g. hitting an un-jumped obstacle).</summary>
+        public void ApplyPenalty(float multiplier, float duration)
+        {
+            _penaltyMul = Mathf.Min(_penaltyMul, Mathf.Clamp01(multiplier));
+            _penaltyTimer = Mathf.Max(_penaltyTimer, duration);
+        }
+
         private void Update() => Tick(Time.deltaTime);
 
         /// <summary>Advance the motor by dt. Public so races can be simulated/tested deterministically.</summary>
@@ -97,6 +108,12 @@ namespace Mixtape.Gameplay
                 {
                     _boostTimer -= dt;
                     if (_boostTimer <= 0f) _speedBoostMul = 1f;
+                }
+
+                if (_penaltyTimer > 0f)
+                {
+                    _penaltyTimer -= dt;
+                    if (_penaltyTimer <= 0f) _penaltyMul = 1f;
                 }
 
                 distance += CurrentSpeed * dt;
