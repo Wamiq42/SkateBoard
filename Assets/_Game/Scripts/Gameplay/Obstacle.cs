@@ -23,9 +23,9 @@ namespace Mixtape.Gameplay
 
         private void OnTriggerEnter(Collider other)
         {
-            var motor = other.GetComponentInParent<RacerMotor>();
+            var motor = other.GetComponentInParent<PhysicsSkater>();
             if (motor == null) return;
-            if (motor.height >= clearHeight) return; // cleared by jumping
+            if (!motor.IsGrounded) return; // airborne (jumping) clears it
 
             motor.ApplyPenalty(slowMultiplier, slowDuration);
             if (hitEffect) Instantiate(hitEffect, transform.position, Quaternion.identity);

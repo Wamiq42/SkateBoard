@@ -21,11 +21,35 @@ namespace Mixtape.UI
         [Header("Rewards by place (1-based)")]
         public int[] coinRewards = { 100, 50, 25 };
 
-        private void Awake() { if (root) root.SetActive(false); }
+        private CanvasGroup _group;
+
+        private void Awake()
+        {
+            EnsureGroup();
+            SetVisible(false);
+        }
+
+        private void EnsureGroup()
+        {
+            if (_group != null || root == null) return;
+            _group = root.GetComponent<CanvasGroup>();
+            if (_group == null) _group = root.AddComponent<CanvasGroup>();
+        }
+
+        private void SetVisible(bool v)
+        {
+            EnsureGroup();
+            if (_group != null)
+            {
+                _group.alpha = v ? 1f : 0f;
+                _group.blocksRaycasts = v;
+                _group.interactable = v;
+            }
+        }
 
         public void Show(bool won, int place)
         {
-            if (root) root.SetActive(true);
+            SetVisible(true);
             if (completePanel) completePanel.SetActive(won);
             if (losePanel) losePanel.SetActive(!won);
 

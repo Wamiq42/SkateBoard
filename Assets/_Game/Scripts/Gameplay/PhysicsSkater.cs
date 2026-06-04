@@ -17,18 +17,18 @@ namespace Mixtape.Gameplay
     {
         [Header("Drive")]
         [Tooltip("Cruising speed on flat ground.")]
-        public float baseSpeed = 16f;
-        public float maxSpeed = 34f;
+        public float baseSpeed = 21f;
+        public float maxSpeed = 44f;
         [Tooltip("How quickly speed eases toward its target.")]
-        public float accel = 14f;
+        public float accel = 18f;
         [Tooltip("Extra target speed per unit of downhill steepness (0..1).")]
-        public float downhillGain = 22f;
+        public float downhillGain = 26f;
         [Tooltip("Speed scrubbed per unit of uphill steepness.")]
-        public float uphillDrag = 16f;
+        public float uphillDrag = 14f;
 
         [Header("Steering")]
         [Tooltip("Yaw degrees/second at full steer (at speed).")]
-        public float steerRate = 95f;
+        public float steerRate = 120f;
         [Tooltip("Steering is scaled by speed up to this value (no spinning when slow).")]
         public float steerSpeedRef = 12f;
 

@@ -30,7 +30,7 @@ namespace Mixtape.Gameplay
 
         private void OnTriggerEnter(Collider other)
         {
-            var motor = other.GetComponentInParent<RacerMotor>();
+            var motor = other.GetComponentInParent<PhysicsSkater>();
             if (motor == null) return;
 
             motor.ApplyBoost(multiplier, duration);
