@@ -1,0 +1,28 @@
+# Unity YAML files use Unity's smart merge (UnityYAMLMerge) when configured
+*.cs text diff=csharp
+*.cginc text
+*.shader text
+
+# Unity serialized assets — treat as text but never normalize line endings
+*.unity     merge=unityyamlmerge eol=lf
+*.prefab    merge=unityyamlmerge eol=lf
+*.asset     merge=unityyamlmerge eol=lf
+*.meta      merge=unityyamlmerge eol=lf
+*.controller merge=unityyamlmerge eol=lf
+*.anim      merge=unityyamlmerge eol=lf
+*.mat       merge=unityyamlmerge eol=lf
+*.physicMaterial merge=unityyamlmerge eol=lf
+
+# Treat large binary assets with Git LFS only if LFS is set up.
+# (Left as plain binary by default.)
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.psd  binary
+*.fbx  binary
+*.obj  binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+*.dll  binary
