@@ -38,11 +38,20 @@ namespace Mixtape.UI
         private GameDatabase DB => GameManager.Instance != null ? GameManager.Instance.Database : null;
         private int Count => DB == null ? 0 : (mode == Mode.Character ? DB.CharacterCount : DB.BoardCount);
 
-        private void Start()
+        // Runs each time this panel is shown (the screens are now panels in the MainMenu
+        // scene, not separate scenes). Panels start inactive, so GameManager is always
+        // ready by the time OnEnable first fires.
+        private void OnEnable()
         {
             if (titleText) titleText.text = mode == Mode.Character ? "SELECT YOUR CHARACTER" : "SELECT SKATEBOARD";
             _index = mode == Mode.Character ? GameManager.Instance.Data.selectedCharacter : GameManager.Instance.Data.selectedBoard;
             ShowCurrent();
+        }
+
+        private void OnDisable()
+        {
+            if (_preview != null) Destroy(_preview);
+            _preview = null;
         }
 
         private void Update()
@@ -126,14 +135,16 @@ namespace Mixtape.UI
         public void Proceed()
         {
             if (Unlocked(_index)) SetSelected(_index);
-            if (mode == Mode.Character) SceneFlow.LoadDirect(SceneFlow.BoardSelect);
-            else SceneFlow.LoadDirect(SceneFlow.Cutscene);
+            // Character -> Board panel; Board -> through Loading into the Game scene
+            // (the opening cutscene now plays inside Game).
+            if (mode == Mode.Character) ScreenManager.Go(ScreenManager.Screen.Board);
+            else SceneFlow.LoadVia(SceneFlow.Game);
         }
 
         public void Back()
         {
-            if (mode == Mode.Character) SceneFlow.LoadDirect(SceneFlow.MainMenu);
-            else SceneFlow.LoadDirect(SceneFlow.CharacterSelect);
+            if (mode == Mode.Character) ScreenManager.Go(ScreenManager.Screen.Menu);
+            else ScreenManager.Go(ScreenManager.Screen.Character);
         }
     }
 }

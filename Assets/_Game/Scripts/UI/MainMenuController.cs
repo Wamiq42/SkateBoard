@@ -24,7 +24,13 @@ namespace Mixtape.UI
         public string moreGamesUrl = "https://play.google.com/store";
         public string privacyUrl = "https://example.com/privacy";
 
-        private void Start()
+        // OnEnable runs every time the menu panel is re-shown (e.g. returning from the
+        // Character panel); Start guarantees a refresh once GameManager is ready on
+        // first load. Both funnel through Refresh — re-running it is harmless.
+        private void OnEnable() => Refresh();
+        private void Start() => Refresh();
+
+        private void Refresh()
         {
             RefreshCoins();
             if (settingsPanel) settingsPanel.SetActive(false);
@@ -38,7 +44,7 @@ namespace Mixtape.UI
                 coinText.text = GameManager.Instance.Data.coins.ToString("N0");
         }
 
-        public void Play() => SceneFlow.LoadDirect(SceneFlow.CharacterSelect);
+        public void Play() => ScreenManager.Go(ScreenManager.Screen.Character);
 
         public void OpenSettings() { if (settingsPanel) settingsPanel.SetActive(true); }
         public void CloseSettings()

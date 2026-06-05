@@ -5,11 +5,10 @@ namespace Mixtape.Core
     /// <summary>Central scene-name constants and the loading hand-off target.</summary>
     public static class SceneFlow
     {
-        public const string Boot = "Boot";
+        // Front-end (MainMenu) and pre-race screens are now panels inside MainMenu,
+        // and the opening cutscene plays inside the Game scene. Only three real
+        // scenes remain in the build.
         public const string MainMenu = "MainMenu";
-        public const string CharacterSelect = "CharacterSelect";
-        public const string BoardSelect = "BoardSelect";
-        public const string Cutscene = "Cutscene";
         public const string Game = "Game";
         public const string Loading = "Loading";
 

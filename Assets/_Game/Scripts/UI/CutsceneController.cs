@@ -2,19 +2,30 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mixtape.Core;
 using Mixtape.Ads;
+using Mixtape.Gameplay;
 
 namespace Mixtape.UI
 {
     /// <summary>
-    /// Opening story cutscene: shows the three friends in the drawing room planning their
-    /// final race, advancing through dialogue lines. Tap advances; Skip / watch-ad-skip
-    /// jump straight to the race.
+    /// Opening intro, now staged inside the Game scene at the Home apartment: the three
+    /// friends plan their final race while dialogue lines advance. On finish it hands off
+    /// to the race (swaps the intro camera for the follow camera and starts the countdown)
+    /// instead of loading a separate scene. Tap advances; Skip / watch-ad-skip jump
+    /// straight to the countdown.
     /// </summary>
     public class CutsceneController : MonoBehaviour
     {
         [Header("Refs (set by builder)")]
         public Text lineText;
         public CanvasGroup fader;
+
+        [Header("Race hand-off (Game scene)")]
+        [Tooltip("Cutscene camera framing the apartment; disabled on finish.")]
+        public GameObject introCamera;
+        [Tooltip("The gameplay follow camera; enabled on finish.")]
+        public GameObject raceCamera;
+        [Tooltip("The posed friends / set-dressing placed in the apartment for the intro; hidden on finish.")]
+        public GameObject introStage;
 
         [TextArea] public string[] lines =
         {
@@ -29,8 +40,11 @@ namespace Mixtape.UI
         private float _timer;
         private bool _finished;
 
-        private void Start()
+        private void OnEnable()
         {
+            _idx = 0;
+            _timer = 0f;
+            _finished = false;
             ShowLine(0);
         }
 
@@ -63,7 +77,14 @@ namespace Mixtape.UI
         {
             if (_finished) return;
             _finished = true;
-            SceneFlow.LoadVia(SceneFlow.Game);
+
+            // Swap the intro framing for gameplay and kick off the countdown.
+            if (introStage) introStage.SetActive(false);
+            if (introCamera) introCamera.SetActive(false);
+            if (raceCamera) raceCamera.SetActive(true);
+
+            RaceManager.Instance?.StartRace();
+            gameObject.SetActive(false); // hide the dialogue overlay
         }
     }
 }

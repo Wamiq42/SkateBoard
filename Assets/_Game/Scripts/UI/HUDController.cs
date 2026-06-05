@@ -30,10 +30,12 @@ namespace Mixtape.UI
             _input = InputService.Instance;
             _race = RaceManager.Instance;
             if (pausePanel) pausePanel.SetActive(false);
+            if (controlsRoot) controlsRoot.SetActive(false); // revealed when the race starts
 
             if (_race != null)
             {
                 _race.CountdownTick += OnCountdown;
+                _race.RaceStarted += OnRaceStarted;
                 _race.RaceFinished += OnFinished;
             }
             UpdateCoins();
@@ -44,6 +46,7 @@ namespace Mixtape.UI
             if (_race != null)
             {
                 _race.CountdownTick -= OnCountdown;
+                _race.RaceStarted -= OnRaceStarted;
                 _race.RaceFinished -= OnFinished;
             }
         }
@@ -75,6 +78,11 @@ namespace Mixtape.UI
             float t = 0f;
             while (t < 0.8f) { t += Time.unscaledDeltaTime; countdownText.transform.localScale = Vector3.one * Mathf.Lerp(1.4f, 1f, t / 0.3f); yield return null; }
             if (n == 0) countdownText.gameObject.SetActive(false);
+        }
+
+        private void OnRaceStarted()
+        {
+            if (controlsRoot) controlsRoot.SetActive(true);
         }
 
         private void OnFinished(bool won, int place)

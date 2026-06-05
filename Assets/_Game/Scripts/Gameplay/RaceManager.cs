@@ -21,7 +21,8 @@ namespace Mixtape.Gameplay
         public List<PhysicsSkater> racers = new List<PhysicsSkater>();
 
         [Header("Flow")]
-        public bool autoStart = true;
+        [Tooltip("Off by default: the in-scene opening intro calls StartRace() when it ends.")]
+        public bool autoStart = false;
         public int countdownFrom = 3;
 
         public event Action<int> CountdownTick;       // 3,2,1, then 0 = GO
@@ -46,6 +47,13 @@ namespace Mixtape.Gameplay
             foreach (var r in racers) if (r != null) r.Active = false;
 
             if (autoStart) yield return StartCoroutine(CountdownAndGo());
+        }
+
+        /// <summary>Called by the opening intro when it finishes — begins the countdown.</summary>
+        public void StartRace()
+        {
+            if (IsRunning || IsFinished) return;
+            StartCoroutine(CountdownAndGo());
         }
 
         public IEnumerator CountdownAndGo()
