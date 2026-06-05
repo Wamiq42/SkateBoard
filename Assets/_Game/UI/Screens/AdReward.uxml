@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/AdReward.uss" />
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement class="scrim">
+            <ui:VisualElement class="ar-card" />
+            <ui:Button name="ar-getnow" class="sprite-btn ar-getnow">
+                <ui:VisualElement class="ar-badge" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

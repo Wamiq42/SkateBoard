@@ -1,0 +1,78 @@
+/* =====================================================================
+   Mixtape — design tokens + reusable UI Toolkit components
+   Shared across every screen. Screen-specific layout lives in each
+   screen's own .uss next to its .uxml.
+   ===================================================================== */
+
+:root {
+    /* palette */
+    --accent:            rgb(247, 167, 30);   /* signature orange/yellow */
+    --accent-soft:       rgb(255, 198, 92);
+    --text-light:        rgb(245, 245, 245);
+    --text-dim:          rgba(255, 255, 255, 0.55);
+
+    /* ad placeholder chrome */
+    --ad-fill:           rgb(8, 8, 9);
+    --ad-border:         rgba(255, 255, 255, 0.07);
+    --ad-label:          rgba(255, 255, 255, 0.22);
+
+    /* dim scrim behind popups. NOTE: project renders in LINEAR color space, so
+       a semi-transparent black composites brighter than its alpha implies (gamma).
+       ~0.95+ is needed for a visually dark backdrop. */
+    --scrim:             rgba(0, 0, 0, 0.96);
+
+    /* fonts */
+    --font:              url("../../../Art/UI/Teko-SemiBold.ttf");
+}
+
+/* ---- screen scaffold ---------------------------------------------- */
+.screen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+}
+
+/* full-bleed background image holder */
+.bg-cover {
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* ---- reserved ad slots -------------------------------------------- */
+.ad-slot {
+    background-color: var(--ad-fill);
+    border-color: var(--ad-border);
+    border-width: 1px;
+    align-items: center;
+    justify-content: center;
+}
+.ad-slot__label {
+    color: var(--ad-label);
+    font-size: 26px;
+    letter-spacing: 8px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+
+/* ---- sprite buttons (image baked in, just scale on press) --------- */
+.sprite-btn {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    transition-property: scale;
+    transition-duration: 0.07s;
+    cursor: link;
+}
+.sprite-btn:hover  { scale: 1.04 1.04; }
+.sprite-btn:active { scale: 0.95 0.95; }
+
+/* ---- popups -------------------------------------------------------- */
+.scrim {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: var(--scrim);
+    align-items: center;
+    justify-content: center;
+}
+.is-hidden { display: none; }

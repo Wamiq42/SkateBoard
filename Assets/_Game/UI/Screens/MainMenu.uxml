@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/MainMenu.uss" />
+
+    <ui:VisualElement name="root" class="screen menu-root">
+
+        <!-- full-bleed background art -->
+        <ui:VisualElement name="stage" class="bg-cover menu-stage">
+
+            <!-- dotted halftone overlay (purely cosmetic) -->
+            <ui:VisualElement name="halftone" class="menu-halftone" picking-mode="Ignore" />
+
+            <!-- reserved top banner ad slot (short strip over the art) -->
+            <ui:VisualElement name="ad-top" class="ad-slot menu-ad-top">
+                <ui:Label text="AD BANNER" class="ad-slot__label" />
+            </ui:VisualElement>
+
+            <!-- reserved left rail ad slot (placeholder; removed when ads integrate) -->
+            <ui:VisualElement name="ad-left" class="ad-slot menu-ad-left">
+                <ui:Label text="AD BANNER" class="ad-slot__label menu-ad-left-label" />
+            </ui:VisualElement>
+
+            <!-- top-left exit -->
+            <ui:Button name="exit-btn" class="sprite-btn menu-exit" />
+
+            <!-- top-right coin pill -->
+            <ui:VisualElement name="coin-pill" class="menu-coin-pill">
+                <ui:Label name="coin-label" text="7,000" class="menu-coin-text" />
+            </ui:VisualElement>
+
+            <!-- logo (swappable placeholder image) -->
+            <ui:VisualElement name="logo" class="menu-logo" />
+
+            <!-- center button stack -->
+            <ui:VisualElement name="btn-stack" class="menu-stack">
+                <ui:Button name="settings-btn" class="sprite-btn menu-stack-btn menu-btn-settings" />
+                <ui:Button name="rate-btn"     class="sprite-btn menu-stack-btn menu-btn-rate" />
+                <ui:Button name="more-btn"      class="sprite-btn menu-stack-btn menu-btn-more" />
+                <ui:Button name="privacy-btn"   class="sprite-btn menu-stack-btn menu-btn-privacy" />
+            </ui:VisualElement>
+
+            <!-- watch-ad-for-coins promo card (the side ad placement) -->
+            <ui:Button name="watchad-btn" class="sprite-btn menu-watchad">
+                <ui:VisualElement name="ad-badge" class="menu-ad-badge" picking-mode="Ignore" />
+            </ui:Button>
+
+            <!-- play -->
+            <ui:Button name="play-btn" class="sprite-btn menu-play" />
+        </ui:VisualElement>
+
+        <!-- ================= SETTINGS POPUP ================= -->
+        <!-- Title "SETTING", "SOUND:" label and the orange border are baked into the
+             panel art; we only overlay the ON/OFF segments and the SAVE button. -->
+        <ui:VisualElement name="settings-popup" class="scrim is-hidden">
+            <ui:VisualElement name="settings-panel" class="set-panel">
+                <ui:Button name="sound-on" class="sprite-btn set-seg set-seg-on">
+                    <ui:Label text="ON" class="set-seg-label" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="sound-off" class="sprite-btn set-seg set-seg-off">
+                    <ui:Label text="OFF" class="set-seg-label" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="settings-save" class="sprite-btn set-save" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ================= EXIT POPUP ================= -->
+        <!-- "GAME EXIT" title + the question are baked into exit/Panel.png; we only
+             overlay YES (confirm quit) and PLAY MORE (stay) at the bottom. -->
+        <ui:VisualElement name="exit-popup" class="scrim is-hidden">
+            <ui:VisualElement name="exit-panel" class="exit-panel">
+                <ui:Button name="exit-yes" class="sprite-btn exit-yes" />
+                <ui:Button name="exit-no"  class="sprite-btn exit-no" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,19 @@
+/* Objective overlay — wide blank panel + title sprite; OK at screen bottom-right. */
+.obj-panel {
+    width: 1300px; height: 528px;
+    background-image: url("../../../Art/UI/objec/Panel.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.obj-title {
+    position: absolute;
+    top: 40px; left: 512px;
+    width: 275px; height: 41px;
+    background-image: url("../../../Art/UI/objec/OBJECTIVE.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.obj-ok {
+    position: absolute;
+    right: 55px; bottom: 45px;
+    width: 252px; height: 84px;
+    background-image: url("../../../Art/UI/objec/ok.png");
+}

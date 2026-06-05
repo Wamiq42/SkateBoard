@@ -1,0 +1,19 @@
+/* Ad-reward overlay — self-contained card + GET NOW button (with red AD badge).
+   Card and button stack centered by the .scrim (column, centered). */
+.ar-card {
+    width: 740px; height: 420px;
+    background-image: url("../../../Art/UI/ad%20reward/popup.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.ar-getnow {
+    width: 252px; height: 84px;
+    margin-top: 30px;
+    background-image: url("../../../Art/UI/ad%20reward/get%20now.png");
+}
+.ar-badge {
+    position: absolute;
+    left: -10px; top: -12px;
+    width: 38px; height: 38px;
+    background-image: url("../../../Art/UI/ad%20reward/AD%20copy%203.png");
+    -unity-background-scale-mode: scale-to-fit;
+}

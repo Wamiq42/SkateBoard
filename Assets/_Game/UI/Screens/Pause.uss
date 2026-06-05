@@ -1,0 +1,28 @@
+/* Pause overlay — blank panel art + title sprite + 3 stacked buttons. */
+.pause-panel {
+    width: 1000px; height: 568px;
+    background-image: url("../../../Art/UI/pause/Panel.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.pause-title {
+    position: absolute;
+    top: 44px; left: 410px;
+    width: 180px; height: 47px;
+    background-image: url("../../../Art/UI/pause/pause.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.pause-stack {
+    position: absolute;
+    top: 175px; left: 315px;
+    width: 370px;
+    flex-direction: column;
+    align-items: center;
+}
+.pause-btn {
+    width: 370px; height: 80px;
+    margin-bottom: 26px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.pause-resume  { background-image: url("../../../Art/UI/pause/resume.png"); }
+.pause-restart { background-image: url("../../../Art/UI/pause/Restart.png"); }
+.pause-home    { background-image: url("../../../Art/UI/pause/home.png"); }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/Objective.uss" />
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement class="scrim">
+            <ui:VisualElement class="obj-panel">
+                <ui:VisualElement class="obj-title" />
+                <!-- body intentionally empty: objective content filled in later -->
+            </ui:VisualElement>
+            <ui:Button name="obj-ok" class="sprite-btn obj-ok" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

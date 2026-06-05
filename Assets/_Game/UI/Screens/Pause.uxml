@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/Pause.uss" />
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement class="scrim">
+            <ui:VisualElement class="pause-panel">
+                <ui:VisualElement class="pause-title" />
+                <ui:VisualElement class="pause-stack">
+                    <ui:Button name="pause-resume"  class="sprite-btn pause-btn pause-resume" />
+                    <ui:Button name="pause-restart" class="sprite-btn pause-btn pause-restart" />
+                    <ui:Button name="pause-home"    class="sprite-btn pause-btn pause-home" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

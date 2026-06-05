@@ -1,0 +1,183 @@
+/* =====================================================================
+   Main Menu — full-bleed background with elements positioned in a
+   1920x1080 reference space. The PanelSettings scales it per device.
+   Sizes use each sprite's native aspect ratio (see SpriteSizes probe).
+   ===================================================================== */
+
+.menu-root {
+    flex-grow: 1;
+}
+
+/* full-screen background art behind everything */
+.menu-stage {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../../../Art/UI/menu-BG.jpg");
+}
+
+/* dotted halftone print texture over the art */
+.menu-halftone {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../Art/halftone.png");
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0.35;
+}
+
+/* short reserved top banner ad strip (art shows faintly behind) */
+.menu-ad-top {
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    height: 96px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+
+/* reserved left rail ad strip (below the top banner, full height) */
+.menu-ad-left {
+    position: absolute;
+    left: 0; top: 96px; bottom: 0;
+    width: 110px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+.menu-ad-left-label {
+    rotate: -90deg;
+    white-space: nowrap;
+    font-size: 22px;
+    letter-spacing: 6px;
+}
+
+/* ---- top-left exit ------------------------------------------------- */
+.menu-exit {
+    position: absolute;
+    left: 140px; top: 185px;
+    width: 125px; height: 66px;
+    background-image: url("../../../Art/UI/menui/Exit.png");
+}
+
+/* ---- top-right coin pill ------------------------------------------- */
+.menu-coin-pill {
+    position: absolute;
+    right: 45px; top: 188px;
+    width: 212px; height: 78px;
+    background-image: url("../../../Art/UI/1-empty/coin%20bar%20copy.png");
+    -unity-background-scale-mode: scale-to-fit;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 24px;
+}
+.menu-coin-text {
+    color: rgb(255, 255, 255);
+    font-size: 38px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+}
+
+/* ---- logo (swappable placeholder image) --------------------------- */
+.menu-logo {
+    position: absolute;
+    left: 1150px; top: 375px;
+    width: 686px; height: 138px;
+    background-image: url("../../../Art/UI/menui/LOGO%20HERE.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* ---- center button stack ------------------------------------------ */
+.menu-stack {
+    position: absolute;
+    left: 764px; top: 596px;
+    width: 388px;
+    flex-direction: column;
+    align-items: center;
+}
+.menu-stack-btn {
+    width: 388px;
+    height: 98px;
+    margin-bottom: 14px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.menu-btn-settings { background-image: url("../../../Art/UI/menui/setting.png"); }
+.menu-btn-rate     { background-image: url("../../../Art/UI/menui/rzte%20us.png"); }
+.menu-btn-more     { background-image: url("../../../Art/UI/menui/More%20game.png"); }
+.menu-btn-privacy  { background-image: url("../../../Art/UI/menui/Privacy%20Policy.png"); }
+
+/* ---- watch-ad-for-coins promo card (side ad placement) ------------ */
+.menu-watchad {
+    position: absolute;
+    right: 40px; top: 700px;
+    width: 360px; height: 152px;
+    background-image: url("../../../Art/UI/menui/ad%20%20coins.png");
+}
+.menu-ad-badge {
+    position: absolute;
+    left: -6px; top: -6px;
+    width: 50px; height: 50px;
+    background-image: url("../../../Art/UI/menui/AD.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* ---- play ---------------------------------------------------------- */
+.menu-play {
+    position: absolute;
+    right: 35px; bottom: 30px;
+    width: 372px; height: 92px;
+    background-image: url("../../../Art/UI/menui/Play.png");
+}
+
+/* =====================================================================
+   SETTINGS POPUP  (SETTING title, SOUND: label + border are baked into
+   the panel art; we overlay the ON/OFF segmented toggle and SAVE)
+   ===================================================================== */
+.set-panel {
+    width: 1000px; height: 568px;
+    background-image: url("../../../Art/UI/settings/Panel.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.set-seg {
+    position: absolute;
+    top: 250px;
+    width: 175px; height: 50px;
+    -unity-background-scale-mode: stretch-to-fill;
+    align-items: center;
+    justify-content: center;
+}
+.set-seg-on  { left: 530px; }
+.set-seg-off { left: 715px; }
+.set-seg-label {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+/* selected = orange (on.png), unselected = dark (Off.png) */
+.seg--sel   { background-image: url("../../../Art/UI/settings/on.png"); }
+.seg--unsel { background-image: url("../../../Art/UI/settings/Off.png"); }
+
+.set-save {
+    position: absolute;
+    left: 361px; top: 488px;
+    width: 277px; height: 62px;
+    background-image: url("../../../Art/UI/settings/save.png");
+}
+
+/* =====================================================================
+   EXIT POPUP  (title + question baked into the panel art; overlay buttons)
+   ===================================================================== */
+.exit-panel {
+    width: 1000px; height: 568px;
+    background-image: url("../../../Art/UI/exit/Panel.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.exit-yes {
+    position: absolute;
+    left: 128px; top: 425px;
+    width: 349px; height: 78px;
+    background-image: url("../../../Art/UI/exit/yes.png");
+}
+.exit-no {
+    position: absolute;
+    left: 507px; top: 425px;
+    width: 365px; height: 78px;
+    background-image: url("../../../Art/UI/exit/no.png");
+}
