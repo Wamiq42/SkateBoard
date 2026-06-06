@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/LevelComplete.uss" />
+
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement name="stage" class="bg-cover lc-stage">
+
+            <!-- reserved top banner (content is left-aligned, so no left rail here) -->
+            <ui:VisualElement class="ad-slot lc-ad-top">
+                <ui:Label text="AD BANNER" class="ad-slot__label" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="lc-title" />
+            <ui:VisualElement class="lc-stars" />
+
+            <ui:VisualElement class="lc-panel">
+                <ui:VisualElement class="lc-stats">
+                    <ui:VisualElement class="lc-row">
+                        <ui:Label text="SCORE" class="lc-label" />
+                        <ui:Label name="val-score" text="15,500" class="lc-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lc-row">
+                        <ui:Label text="BEST COMBO" class="lc-label" />
+                        <ui:Label name="val-combo" text="X25" class="lc-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lc-row">
+                        <ui:Label text="TRICKS LANDED" class="lc-label" />
+                        <ui:Label name="val-tricks" text="18" class="lc-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lc-row">
+                        <ui:Label text="DISTANCE" class="lc-label" />
+                        <ui:Label name="val-distance" text="1.25 KM" class="lc-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lc-row">
+                        <ui:Label text="COINS EARNED" class="lc-label" />
+                        <ui:VisualElement class="lc-coins-val">
+                            <ui:Label name="val-coins" text="850" class="lc-value lc-value--gold" />
+                            <ui:VisualElement class="lc-coin-icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- action buttons -->
+            <ui:Button name="lc-menu"    class="sprite-btn lc-btn lc-menu" />
+            <ui:Button name="lc-restart" class="sprite-btn lc-btn lc-restart" />
+            <ui:Button name="lc-next"    class="sprite-btn lc-btn lc-next" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

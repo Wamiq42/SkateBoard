@@ -1,0 +1,90 @@
+/* =====================================================================
+   Level Complete — full-bleed skater bg, left-aligned content.
+   Measured from 0-mockups/level-clear.jpg in 1920x1080 reference.
+   ===================================================================== */
+.lc-stage {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../../../Art/UI/level-clear-bg.jpg");
+}
+
+/* reserved top banner (no left rail; content hugs the left edge) */
+.lc-ad-top {
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    height: 96px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+
+.lc-title {
+    position: absolute;
+    left: 135px; top: 182px;
+    width: 900px; height: 158px;
+    background-image: url("../../../Art/UI/level%20clear/LEVEL%20COMPLETE.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.lc-stars {
+    position: absolute;
+    left: 135px; top: 292px;
+    width: 820px; height: 289px;
+    background-image: url("../../../Art/UI/level%20clear/stars.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* stats panel */
+.lc-panel {
+    position: absolute;
+    left: 185px; top: 548px;
+    width: 1445px; height: 374px;
+    background-image: url("../../../Art/UI/level%20clear/panel.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.lc-stats {
+    position: absolute;
+    left: 58px; top: 34px; bottom: 34px;
+    width: 950px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.lc-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.lc-label {
+    color: rgb(255, 255, 255);
+    font-size: 34px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+.lc-value {
+    color: rgb(255, 255, 255);
+    font-size: 34px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+.lc-value--gold { color: var(--accent); }
+.lc-coins-val {
+    flex-direction: row;
+    align-items: center;
+}
+.lc-coin-icon {
+    width: 42px; height: 43px;
+    margin-left: 12px;
+    background-image: url("../../../Art/UI/level%20clear/Coin.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* action buttons */
+.lc-btn {
+    position: absolute;
+    top: 945px;
+    height: 83px;
+}
+.lc-menu    { left: 75px;  width: 371px;
+    background-image: url("../../../Art/UI/level%20clear/menu.png"); }
+.lc-restart { left: 531px; width: 371px;
+    background-image: url("../../../Art/UI/level%20clear/Restart%20.png"); }
+.lc-next    { left: 987px; width: 393px; height: 84px;
+    background-image: url("../../../Art/UI/level%20clear/next.png"); }
