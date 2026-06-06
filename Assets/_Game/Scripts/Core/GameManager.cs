@@ -65,6 +65,12 @@ namespace Mixtape.Core
         public void SelectCharacter(int index) { Data.selectedCharacter = index; SaveData(); }
         public void SelectBoard(int index) { Data.selectedBoard = index; SaveData(); }
 
+        // ---- Level selection ----
+        // 0 = Level 1, 1 = Level 2, ... Kept in memory (survives scene loads via the singleton);
+        // set this before loading the Game scene to choose which level plays.
+        public int SelectedLevel { get; private set; } = 0;
+        public void SelectLevel(int index) => SelectedLevel = Mathf.Max(0, index);
+
         // ---- Navigation ----
         public void LoadMainMenu() => SceneManager.LoadScene(mainMenuScene);
         public void LoadGame() => SceneManager.LoadScene(gameScene);
