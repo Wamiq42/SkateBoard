@@ -1,0 +1,145 @@
+/* =====================================================================
+   Character Select — positions measured from 0-mockups/character-selec.jpg.
+   Content is centered (~x1010), NOT left-shifted. 1920x1080 reference.
+   ===================================================================== */
+.cs-stage {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../../../Art/UI/character-selec-bg.jpg");
+}
+
+/* reserved ad rails (top banner + left vertical) */
+.cs-ad-top {
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    height: 96px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+.cs-ad-left {
+    position: absolute;
+    left: 0; top: 96px; bottom: 0;
+    width: 110px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+.cs-ad-left-label {
+    rotate: -90deg;
+    white-space: nowrap;
+    font-size: 22px;
+    letter-spacing: 6px;
+}
+
+/* title: centered over the character, large */
+.cs-title {
+    position: absolute;
+    left: 607px; top: 205px;
+    width: 806px; height: 100px;
+    background-image: url("../../../Art/UI/character%20selec/tag.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    align-items: center;
+    justify-content: center;
+}
+.cs-title-text {
+    width: 700px; height: 46px;
+    background-image: url("../../../Art/UI/character%20selec/SELECT%20your%20character.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* left stat panel (larger, just right of the ad rail) */
+.cs-panel {
+    position: absolute;
+    left: 115px; top: 365px;
+    width: 327px; height: 445px;
+    background-image: url("../../../Art/UI/character%20selec/panel.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.cs-stats {
+    position: absolute;
+    left: 32px; top: 44px; right: 32px; bottom: 44px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.cs-stat-row { flex-direction: column; }
+.cs-stat-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 11px;
+}
+.cs-stat-label {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+.cs-stat-val {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+.cs-bar {
+    height: 18px;
+    background-image: url("../../../Art/UI/character%20selec/bar.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.cs-fill {
+    height: 18px;
+    background-image: url("../../../Art/UI/character%20selec/filler.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* podium + character — centered at x1010. Podium narrowed so it clears the
+   SELECT button on the right. Character box is wide (ar 0.75) so the preview
+   doesn't clip the figure's hands; the view frames the feet to the box bottom. */
+.cs-podium {
+    position: absolute;
+    left: 750px; top: 858px;
+    width: 520px; height: 103px;
+    background-image: url("../../../Art/UI/character%20selec/ramp.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.cs-char {
+    position: absolute;
+    left: 808px; top: 350px;
+    width: 405px; height: 540px;
+    background-image: url("../../../Art/UI/character%20selec/Layer%20669.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* prev / next arrows (larger, flanking the character) */
+.cs-arrow {
+    position: absolute;
+    top: 508px;
+    width: 112px; height: 116px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.cs-arrow-left  { left: 576px;  background-image: url("../../../Art/UI/character%20selec/arrow.png"); }
+.cs-arrow-right { left: 1330px; background-image: url("../../../Art/UI/character%20selec/arrow%202.png"); }
+
+/* action buttons — bottom-right corner */
+.cs-watchad {
+    position: absolute;
+    right: 155px; bottom: 170px;
+    width: 230px; height: 80px;
+    background-image: url("../../../Art/UI/board%20selec/AD%20unlock.png");
+}
+.cs-ad-badge {
+    position: absolute;
+    left: -8px; top: -10px;
+    width: 38px; height: 38px;
+    background-image: url("../../../Art/UI/character%20selec/AD%20copy%202.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.cs-select {
+    position: absolute;
+    right: 410px; bottom: 78px;
+    width: 230px; height: 78px;
+    background-image: url("../../../Art/UI/character%20selec/seelct.png");
+}
+.cs-buy {
+    position: absolute;
+    right: 155px; bottom: 78px;
+    width: 230px; height: 78px;
+    background-image: url("../../../Art/UI/character%20selec/buy.png");
+}

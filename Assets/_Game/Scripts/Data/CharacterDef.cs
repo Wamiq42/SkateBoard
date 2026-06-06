@@ -15,5 +15,11 @@ namespace Mixtape.Data
         public int price = 0;
         [Tooltip("If true, can also be unlocked by watching a rewarded ad.")]
         public bool unlockableByAd = true;
+
+        [Header("Display stats (0-100, shown as bars on Character Select)")]
+        [Range(0, 100)] public int accuracy = 85;
+        [Range(0, 100)] public int stamina = 65;
+        [Range(0, 100)] public int health = 28;
+        [Range(0, 100)] public int speed = 50;
     }
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/CharacterSelect.uss" />
+
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement name="stage" class="bg-cover cs-stage">
+
+            <!-- reserved ad rails -->
+            <ui:VisualElement class="ad-slot cs-ad-top">
+                <ui:Label text="AD BANNER" class="ad-slot__label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="ad-slot cs-ad-left">
+                <ui:Label text="AD BANNER" class="ad-slot__label cs-ad-left-label" />
+            </ui:VisualElement>
+
+            <!-- title -->
+            <ui:VisualElement class="cs-title">
+                <ui:VisualElement class="cs-title-text" />
+            </ui:VisualElement>
+
+            <!-- stat panel -->
+            <ui:VisualElement class="cs-panel">
+                <ui:VisualElement class="cs-stats">
+                    <ui:VisualElement class="cs-stat-row">
+                        <ui:VisualElement class="cs-stat-head">
+                            <ui:Label text="ACCURACY" class="cs-stat-label" />
+                            <ui:Label name="val-accuracy" text="85%" class="cs-stat-val" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="cs-bar">
+                            <ui:VisualElement name="fill-accuracy" class="cs-fill" style="width: 85%;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="cs-stat-row">
+                        <ui:VisualElement class="cs-stat-head">
+                            <ui:Label text="STAMINA" class="cs-stat-label" />
+                            <ui:Label name="val-stamina" text="65%" class="cs-stat-val" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="cs-bar">
+                            <ui:VisualElement name="fill-stamina" class="cs-fill" style="width: 65%;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="cs-stat-row">
+                        <ui:VisualElement class="cs-stat-head">
+                            <ui:Label text="HEALTH" class="cs-stat-label" />
+                            <ui:Label name="val-health" text="28%" class="cs-stat-val" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="cs-bar">
+                            <ui:VisualElement name="fill-health" class="cs-fill" style="width: 28%;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="cs-stat-row">
+                        <ui:VisualElement class="cs-stat-head">
+                            <ui:Label text="SPEED" class="cs-stat-label" />
+                            <ui:Label name="val-speed" text="50%" class="cs-stat-val" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="cs-bar">
+                            <ui:VisualElement name="fill-speed" class="cs-fill" style="width: 50%;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- podium + character (Phase 1: static portrait; Phase 2: live 3D RT) -->
+            <ui:VisualElement class="cs-podium" />
+            <ui:VisualElement name="char-img" class="cs-char" />
+
+            <!-- prev / next -->
+            <ui:Button name="cs-prev" class="sprite-btn cs-arrow cs-arrow-left" />
+            <ui:Button name="cs-next" class="sprite-btn cs-arrow cs-arrow-right" />
+
+            <!-- actions -->
+            <ui:Button name="cs-watchad" class="sprite-btn cs-watchad">
+                <ui:VisualElement class="cs-ad-badge" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="cs-select" class="sprite-btn cs-select" />
+            <ui:Button name="cs-buy" class="sprite-btn cs-buy" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

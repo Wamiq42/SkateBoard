@@ -69,6 +69,19 @@ foreach (var p in new[]{ "Assets/Art/UI/menui/Play.png" /* ... */ }) {
 }
 ```
 
+## 3D model preview in UITK (Character/Board Select)
+Characters/boards have only 3D `modelPrefab`s (no 2D portraits). To show a live
+rotating preview in the UI, the view builds a small rig at runtime (see
+`CharacterSelectView`): a `GameObject` placed **far from the scene** (e.g. x=10000 so
+the main camera never frames it) holding an **orthographic Camera** (`clearFlags=SolidColor`,
+`backgroundColor=(0,0,0,0)` for a transparent cutout), a directional `Light`, and a mount.
+Instantiate the model at the mount, rotate it each `Update`, frame the camera from the
+model's combined `Renderer.bounds`, render to a `RenderTexture(600,1067,ARGB32)`, and show it
+in a `VisualElement` via `style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt))`.
+Release the RT + destroy the rig in `OnDisable`. (Models are currently **T-posed** — no anim clips.)
+Provide the catalog via a serialized `GameDatabase database` field so it runs in the sandbox
+with no GameManager; fall back to "free chars unlocked" for lock state when GameManager is null.
+
 ## View-script pattern
 - MonoBehaviour in namespace **`Mixtape.UITK`**, `[RequireComponent(typeof(UIDocument))]`.
 - In `OnEnable`: `var root = GetComponent<UIDocument>().rootVisualElement;` then `root.Q<Button>("id")`
