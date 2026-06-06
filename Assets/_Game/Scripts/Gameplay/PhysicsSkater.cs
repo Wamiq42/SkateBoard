@@ -16,15 +16,25 @@ namespace Mixtape.Gameplay
     public class PhysicsSkater : MonoBehaviour
     {
         [Header("Drive")]
-        [Tooltip("Cruising speed on flat ground.")]
-        public float baseSpeed = 21f;
-        public float maxSpeed = 44f;
+        [Tooltip("Steady CRUISE speed the time-ramp settles at (on flat ground).")]
+        public float baseSpeed = 26f;
+        public float maxSpeed = 40f;
         [Tooltip("How quickly speed eases toward its target.")]
-        public float accel = 18f;
+        public float accel = 14f;
         [Tooltip("Extra target speed per unit of downhill steepness (0..1).")]
-        public float downhillGain = 26f;
+        public float downhillGain = 12f;
         [Tooltip("Speed scrubbed per unit of uphill steepness.")]
-        public float uphillDrag = 14f;
+        public float uphillDrag = 12f;
+
+        [Header("Time ramp (Subway-Surfers feel)")]
+        [Tooltip("Speed climbs from startSpeed up to baseSpeed over rampTime, then holds. Collisions knock it back so you rebuild.")]
+        public bool useTimeRamp = true;
+        [Tooltip("Speed the moment the race starts, before the ramp builds.")]
+        public float startSpeed = 12f;
+        [Tooltip("Seconds to climb from startSpeed to baseSpeed (the steady cruise speed).")]
+        public float rampTime = 18f;
+        [Tooltip("Fraction of built-up ramp kept after a collision (0.6 = lose 40% of your momentum).")]
+        [Range(0f, 1f)] public float rampKeepOnHit = 0.6f;
 
         [Header("Steering")]
         [Tooltip("Yaw degrees/second at full steer (at speed).")]
@@ -33,11 +43,15 @@ namespace Mixtape.Gameplay
         public float steerSpeedRef = 12f;
 
         [Header("Air / jump")]
-        public float gravity = 26f;
-        public float jumpSpeed = 9f;
+        public float gravity = 22f;
+        public float jumpSpeed = 10.5f;
         public int maxJumps = 2;
         [Tooltip("Limited steering authority while airborne (0..1).")]
-        public float airControl = 0.35f;
+        public float airControl = 0.4f;
+        [Tooltip("Vertical slack above ride height within which a *descending* jump re-lands. " +
+                 "Kept small so road-magnetization can't grab the skater at the apex (that was eating the arc). " +
+                 "Smaller = floatier / cleaner parabola; larger = lands sooner.")]
+        public float landSnap = 0.2f;
 
         [Header("Ground follow")]
         public LayerMask groundMask = ~0;
@@ -52,6 +66,14 @@ namespace Mixtape.Gameplay
         public float Speed => _speed;
         public Vector3 Velocity => _rb != null ? _rb.linearVelocity : Vector3.zero;
         public bool IsBoosting => _boostTimer > 0f;
+        /// <summary>Vertical velocity (units/s); + up, - down. Handy for tuning telemetry.</summary>
+        public float VerticalSpeed => _airVelY;
+        /// <summary>Jumps consumed since the last landing (0 grounded, 1 after one jump, etc.).</summary>
+        public int JumpsUsed => _jumpsUsed;
+        /// <summary>How far along the speed ramp we are (0 = startSpeed, 1 = full cruise). Telemetry.</summary>
+        public float RampProgress => rampTime > 0.01f ? Mathf.Clamp01(_rampT / rampTime) : 1f;
+        /// <summary>Fires on each successful jump with the jump number (1 = first, 2 = double-jump).</summary>
+        public event System.Action<int> Jumped;
 
         private Rigidbody _rb;
         private float _speed;
@@ -59,6 +81,8 @@ namespace Mixtape.Gameplay
         private Vector3 _groundNormal = Vector3.up;
         private int _jumpsUsed;
         private float _airVelY;
+        private bool _airborne;     // true from a jump until we re-land (ignores road magnetization)
+        private float _rampT;       // elapsed time on the speed ramp (0..rampTime)
         private float _boostMul = 1f, _boostTimer;
         private float _penaltyMul = 1f, _penaltyTimer;
 
@@ -80,15 +104,22 @@ namespace Mixtape.Gameplay
         }
 
         public void ApplyBoost(float mul, float dur) { _boostMul = Mathf.Max(_boostMul, mul); _boostTimer = Mathf.Max(_boostTimer, dur); }
-        public void ApplyPenalty(float mul, float dur) { _penaltyMul = Mathf.Min(_penaltyMul, Mathf.Clamp01(mul)); _penaltyTimer = Mathf.Max(_penaltyTimer, dur); }
+        public void ApplyPenalty(float mul, float dur)
+        {
+            _penaltyMul = Mathf.Min(_penaltyMul, Mathf.Clamp01(mul));
+            _penaltyTimer = Mathf.Max(_penaltyTimer, dur);
+            _rampT *= Mathf.Clamp01(rampKeepOnHit);   // collision scrubs built-up momentum
+        }
 
         public void Jump()
         {
             if (_jumpsUsed >= maxJumps) return;
             if (IsGrounded) _jumpsUsed = 0;
-            _airVelY = jumpSpeed;
+            _airVelY = jumpSpeed;       // reset upward velocity each jump (so the 2nd jump pops fresh)
             _jumpsUsed++;
+            _airborne = true;
             IsGrounded = false;
+            Jumped?.Invoke(_jumpsUsed);
         }
 
         public void Teleport(Vector3 pos, Vector3 forward)
@@ -99,7 +130,7 @@ namespace Mixtape.Gameplay
             transform.position = pos;
             transform.rotation = Quaternion.LookRotation(_heading, Vector3.up);
             _rb.linearVelocity = Vector3.zero;
-            _speed = 0f; _airVelY = 0f; _jumpsUsed = 0;
+            _speed = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false;
         }
 
         private void FixedUpdate()
@@ -116,10 +147,28 @@ namespace Mixtape.Gameplay
             float groundY = hitGround ? hit.point.y : _rb.position.y;
             _groundNormal = hitGround ? Vector3.Slerp(_groundNormal, hit.normal, alignSpeed * dt) : Vector3.up;
 
-            // Magnetized: grounded whenever road is within probe range below and not
-            // mid-jump. Only a real jump (or a true cliff edge with no ground) leaves it.
-            bool nearGround = hitGround && _airVelY <= 0.01f;
-            IsGrounded = nearGround;
+            // Height of the pivot above the road right now (∞ if no road in range).
+            float heightAboveGround = hitGround ? _rb.position.y - groundY : float.PositiveInfinity;
+
+            if (_airborne)
+            {
+                // Mid-jump: IGNORE road magnetization so the whole parabola plays out.
+                // (Previously the 6-unit probe re-grounded us at the apex, which ate the
+                // descent and made jumps "instantly drop".) Only re-land once we're actually
+                // descending AND close to the surface.
+                if (hitGround && _airVelY <= 0f && heightAboveGround <= hoverHeight + landSnap)
+                {
+                    _airborne = false;
+                    _jumpsUsed = 0;
+                    IsGrounded = true;
+                }
+                else IsGrounded = false;
+            }
+            else
+            {
+                // Rolling: magnetized to the road within probe range (hugs crests/dips).
+                IsGrounded = hitGround;
+            }
 
             // --- Steering ---
             float steer = Mathf.Clamp(SteerInput, -1f, 1f);
@@ -136,8 +185,15 @@ namespace Mixtape.Gameplay
             // --- Speed (auto-roll + gravity on slope) ---
             if (Active)
             {
+                // Ramp the cruise speed up over time, then hold (Subway-Surfers feel).
+                // Clamp the start to baseSpeed so a misconfigured startSpeed > baseSpeed can never
+                // make this ramp DOWN (i.e. "starts fast then slows" — only ever ramp up or hold).
+                if (useTimeRamp && rampTime > 0.01f) _rampT = Mathf.Min(_rampT + dt, rampTime);
+                float rampFrom = Mathf.Min(startSpeed, baseSpeed);
+                float cruise = useTimeRamp ? Mathf.Lerp(rampFrom, baseSpeed, _rampT / Mathf.Max(0.01f, rampTime)) : baseSpeed;
+
                 float slope = -fwdOnPlane.y;                 // >0 downhill, <0 uphill
-                float target = baseSpeed + Mathf.Max(0f, slope) * downhillGain;
+                float target = cruise + Mathf.Max(0f, slope) * downhillGain;
                 target = Mathf.Min(target, maxSpeed) * _boostMul * _penaltyMul;
                 float a = accel + Mathf.Max(0f, -slope) * uphillDrag;   // brake harder uphill
                 _speed = Mathf.MoveTowards(_speed, target, a * dt);
@@ -162,10 +218,10 @@ namespace Mixtape.Gameplay
             }
             else
             {
+                // airborne (jump) or free-falling off a cliff: integrate gravity.
+                // Landing is decided next frame by the _airborne / magnetization logic above.
                 _airVelY -= gravity * dt;
                 vel.y = _airVelY;
-                // landing
-                if (hitGround && _rb.position.y + _airVelY * dt <= groundY + hoverHeight) { _jumpsUsed = 0; }
             }
 
             _rb.linearVelocity = vel;

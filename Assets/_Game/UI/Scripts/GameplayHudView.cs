@@ -15,10 +15,10 @@ namespace Mixtape.UITK
     /// level-complete popups (each its own UIDocument), shows a transient 3-2-1-GO countdown and a
     /// small position/rank pill, and hands off to Level Complete on finish.
     ///
-    /// Mechanics note (see HANDOFF.md "to add"): only steer / jump / boost exist today, so both
-    /// booster buttons map to the existing boost and the double-jump button is a visible no-op
-    /// until a real double-jump mechanic is added. Every singleton + ref is null-guarded so the
-    /// overlay still runs standalone in the UIToolkitTesting sandbox.
+    /// Mechanics note (see HANDOFF.md "to add"): both booster buttons still map to the existing
+    /// boost. The double-jump button is now wired (it queues a jump; PhysicsSkater grants up to
+    /// maxJumps). Every singleton + ref is null-guarded so the overlay still runs standalone in
+    /// the UIToolkitTesting sandbox.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class GameplayHudView : MonoBehaviour
@@ -66,8 +66,8 @@ namespace Mixtape.UITK
             HoldBoost(root.Q<Button>("booster-btn"));
             HoldBoost(root.Q<Button>("booster2-btn"));
 
-            // ---- double-jump: no mechanic yet -> visible no-op (see HANDOFF.md) ----
-            Click(root.Q<Button>("djump-btn"), () => Debug.Log("[HUD] DOUBLE JUMP pressed (no mechanic yet)"));
+            // ---- double-jump: same queue as jump; PhysicsSkater allows up to maxJumps ----
+            Click(root.Q<Button>("djump-btn"), () => _input?.PressJump());
 
             // ---- pause (always available, even during the intro) ----
             Click(root.Q<Button>("pause-btn"), TogglePause);

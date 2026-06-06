@@ -41,6 +41,19 @@ namespace Mixtape.Gameplay
             _pH = Animator.StringToHash(pushTrigger);
         }
 
+        private void OnEnable()  { if (_ps != null) _ps.Jumped += OnJumped; }
+        private void OnDisable() { if (_ps != null) _ps.Jumped -= OnJumped; }
+
+        // The first jump is already animated by the grounded->airborne edge below; this fires
+        // the pop again on the mid-air double-jump (no ground edge to catch it otherwise).
+        private void OnJumped(int n)
+        {
+            if (n < 2) return;
+            Grab();
+            if (_anim  != null) _anim.SetTrigger(_jH);
+            if (_board != null) _board.SetTrigger(_jH);
+        }
+
         private void Grab()
         {
             if (_rider == null) return;

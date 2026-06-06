@@ -7,12 +7,12 @@ namespace Mixtape.Gameplay
     {
         public Transform target;
         [Tooltip("Offset behind/above the target, in the target's local space.")]
-        public Vector3 localOffset = new Vector3(0f, 3.2f, -6f);
-        public float positionSmooth = 8f;
-        public float rotationSmooth = 8f;
+        public Vector3 localOffset = new Vector3(0f, 3.4f, -6.5f);
+        public float positionSmooth = 7f;
+        public float rotationSmooth = 7f;
         [Tooltip("How far ahead of the target the camera looks.")]
-        public float lookAhead = 4f;
-        public float lookHeight = 1.2f;
+        public float lookAhead = 5f;
+        public float lookHeight = 1.3f;
 
         private void LateUpdate()
         {
