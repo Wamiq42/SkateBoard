@@ -164631,9 +164631,18 @@ MonoBehaviour:
   route: {fileID: 1065023545}
   lookahead: 15
   steerSharpness: 32
+  laneOffset: 1.8
+  wanderFrequency: 0.25
   skill: 1
   player: {fileID: 15200048}
   rubberBand: 1
+  avoidObstacles: 1
+  senseDistance: 6
+  senseLead: 0.35
+  senseRadius: 0.6
+  avoidStrength: 0.9
+  jumpLead: 0.32
+  jumpClearMargin: 0.25
 --- !u!1 &372858930
 GameObject:
   m_ObjectHideFlags: 0
@@ -175476,8 +175485,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 618989536}
-  - component: {fileID: 618989535}
-  - component: {fileID: 618989534}
   m_Layer: 0
   m_Name: PATCH
   m_TagString: Untagged
@@ -175485,30 +175492,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &618989534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 618989533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d0e05ecc40cf55c341c6486d2d9dc73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &618989535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 618989533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4796cb4919f393b735bc311d4fe1e0b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &618989536
 Transform:
   m_ObjectHideFlags: 0
@@ -239312,9 +239295,18 @@ MonoBehaviour:
   route: {fileID: 1065023545}
   lookahead: 15
   steerSharpness: 32
+  laneOffset: 1.8
+  wanderFrequency: 0.25
   skill: 1
   player: {fileID: 15200048}
   rubberBand: 1
+  avoidObstacles: 1
+  senseDistance: 6
+  senseLead: 0.35
+  senseRadius: 0.6
+  avoidStrength: 0.9
+  jumpLead: 0.32
+  jumpClearMargin: 0.25
 --- !u!1 &2085988506
 GameObject:
   m_ObjectHideFlags: 0
