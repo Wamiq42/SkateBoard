@@ -11,10 +11,11 @@ namespace SkaterAnim
     {
         public Dictionary<string, Vector3> rot = new Dictionary<string, Vector3>();
         public Vector3 hips;
+        public float lowerYaw = 60f; // how much the lower body is turned across the board this frame
 
         public Pose Clone()
         {
-            var p = new Pose { hips = hips };
+            var p = new Pose { hips = hips, lowerYaw = lowerYaw };
             foreach (var kv in rot) p.rot[kv.Key] = kv.Value;
             return p;
         }
@@ -31,6 +32,11 @@ namespace SkaterAnim
     {
         public const string FBX = "Assets/skate board 1/skate board/CHART/D (4).fbx";
         public const string DIR = "Assets/_Game/Animations/Skater/";
+
+        // Skateboard stance: turn the lower body (hips+legs+feet) across the board,
+        // then counter-rotate the torso back so it keeps facing forward.
+        public static float LowerYaw = 60f;
+        public static float TorsoCounter = -52f;
 
         public static Transform FindDeep(Transform r, string n)
         {
@@ -83,6 +89,16 @@ namespace SkaterAnim
                 if (e.y != 0) t.Rotate(Vector3.up, e.y, Space.World);
                 if (e.z != 0) t.Rotate(Vector3.forward, e.z, Space.World);
             }
+            // Post-step: rigidly turn the already-posed lower body across the board,
+            // then counter the torso so it keeps facing forward (knees/feet stay intact).
+            // Per-pose lowerYaw lets actions (e.g. pushing) turn the feet forward and back.
+            if (Mathf.Abs(p.lowerYaw) > 0.01f)
+            {
+                var hips = FindDeep(go.transform, "mixamorig:Hips");
+                var spine = FindDeep(go.transform, "mixamorig:Spine");
+                if (hips != null) hips.Rotate(Vector3.up, p.lowerYaw, Space.World);
+                if (spine != null) spine.Rotate(Vector3.up, -p.lowerYaw * 0.8667f, Space.World);
+            }
         }
 
         static void SetQ(AnimationClip clip, string path, float[] t, Quaternion[] q)
@@ -112,6 +128,7 @@ namespace SkaterAnim
 
             var bones = new HashSet<string>();
             foreach (var p in poses) foreach (var k in p.rot.Keys) bones.Add(k);
+            bones.Add("mixamorig:Hips"); // capture hips rotation too (lower-body yaw)
 
             var rotKeys = new Dictionary<string, Quaternion[]>();
             var paths = new Dictionary<string, string>();
