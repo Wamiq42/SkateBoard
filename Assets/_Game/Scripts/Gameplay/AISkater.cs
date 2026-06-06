@@ -46,10 +46,17 @@ namespace Mixtape.Gameplay
         [Tooltip("Extra height margin required before an obstacle counts as jump-clearable.")]
         public float jumpClearMargin = 0.25f;
 
+        [Tooltip("Draw the steer target (yellow), forward sensor (cyan), and avoid/jump reactions in the Scene view.")]
+        public bool debugGizmos = false;
+
         private PhysicsSkater _ps;
         private float _baseMax, _baseCruise;
         private float _noiseSeed;
         private static readonly RaycastHit[] _hits = new RaycastHit[8];
+
+        // Cached for the debug gizmo only.
+        private Vector3 _dbgTarget, _dbgSenseEnd;
+        private bool _dbgJump, _dbgAvoid;
 
         private void Awake()
         {
@@ -72,6 +79,7 @@ namespace Mixtape.Gameplay
 
             float drift = (Mathf.PerlinNoise(_noiseSeed, Time.time * wanderFrequency) * 2f - 1f) * laneOffset;
             Vector3 target = route.SteerTarget(transform.position, lookahead) + routeRight * drift;
+            _dbgTarget = target;
 
             Vector3 to = target - transform.position; to.y = 0f;
             Vector3 fwd = transform.forward; fwd.y = 0f;
@@ -101,9 +109,11 @@ namespace Mixtape.Gameplay
         }
 
         /// <summary>
-        /// Forward probe. Requests a jump for hazards it can clear (double-jumping only when a
-        /// single hop won't reach), and returns an extra steer (-1..1) to swerve around things
-        /// it cannot jump. Boosters are never avoided.
+        /// Forward probe. Reacts ONLY to the track's hazards/pickups (the <see cref="Obstacle"/> /
+        /// <see cref="Booster"/> trigger boxes under "Interactions") — never to the road mesh or other
+        /// geometry, so the AI doesn't fight the track. Requests a jump for hazards it can clear
+        /// (double-jumping only when a single hop won't reach), returns an extra steer (-1..1) to
+        /// swerve around hazards too tall to jump, and leaves boosters alone.
         /// </summary>
         private float Sense(Vector3 fwd)
         {
@@ -111,10 +121,12 @@ namespace Mixtape.Gameplay
             float dist = senseDistance + speed * senseLead;
             Vector3 origin = transform.position + Vector3.up * 0.5f;
             Vector3 right = Vector3.Cross(Vector3.up, fwd);
-            const int skaterMask = ~(1 << 2); // skip skaters (the "Ignore Raycast" layer)
+            _dbgSenseEnd = origin + fwd * dist; _dbgJump = false; _dbgAvoid = false;
 
+            // QueryTriggerInteraction.Collide so the trigger-collider hazards register. We then
+            // keep only Obstacle hits and discard everything else (track, props, boosters, slopes).
             int n = Physics.SphereCastNonAlloc(origin, senseRadius, fwd, _hits, dist,
-                                               skaterMask, QueryTriggerInteraction.Collide);
+                                               Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
             if (n == 0) return 0f;
 
             // Reach of one jump and (roughly) a double jump, used to decide jump vs swerve.
@@ -122,46 +134,61 @@ namespace Mixtape.Gameplay
             float doubleApex = apex * 2f;
             float jumpDist = Mathf.Clamp(speed * jumpLead, 1.5f, dist);
 
-            float nearestWall = float.MaxValue;
+            float nearestBlock = float.MaxValue;
             float avoid = 0f;
 
             for (int i = 0; i < n; i++)
             {
                 RaycastHit h = _hits[i];
-                if (h.collider == null || h.collider.transform.IsChildOf(transform)) continue;
+                if (h.collider == null) continue;
 
                 // Boosters are good — never swerve or jump to dodge them.
                 if (h.collider.GetComponentInParent<Booster>() != null) continue;
 
-                bool isHazard = h.collider.GetComponentInParent<Obstacle>() != null;
-                if (!isHazard)
-                {
-                    // Solid geometry: only near-vertical faces are walls. This skips the road
-                    // floor and gentle slopes, which a forward probe can graze on hills.
-                    if (Vector3.Dot(h.normal, Vector3.up) > 0.5f) continue;
-                }
+                // Only react to real hazards. The road mesh and every other collider are ignored,
+                // so the AI follows its line instead of swerving off the track geometry.
+                if (h.collider.GetComponentInParent<Obstacle>() == null) continue;
 
+                // Height is measured against the hazard's OWN box (not the giant track bounds).
                 float topAbove = h.collider.bounds.max.y - transform.position.y;
                 bool clearable = topAbove <= doubleApex - jumpClearMargin;
 
-                if (clearable && h.distance <= jumpDist)
+                if (clearable)
                 {
-                    bool needsDouble = topAbove > apex - jumpClearMargin;
-                    if (_ps.IsGrounded) _ps.JumpRequested = true;                       // first hop
-                    else if (needsDouble && _ps.Velocity.y > 0f) _ps.JumpRequested = true; // double for tall
-                    continue;
+                    if (h.distance <= jumpDist)
+                    {
+                        bool needsDouble = topAbove > apex - jumpClearMargin;
+                        if (_ps.IsGrounded) { _ps.JumpRequested = true; _dbgJump = true; }                       // first hop
+                        else if (needsDouble && _ps.Velocity.y > 0f) { _ps.JumpRequested = true; _dbgJump = true; } // double for tall
+                    }
                 }
-
-                if (!clearable && h.distance < nearestWall)
+                else if (h.distance < nearestBlock)
                 {
-                    // Swerve toward the side the obstacle isn't on.
-                    nearestWall = h.distance;
+                    // Too tall to jump — swerve toward the side it isn't on.
+                    nearestBlock = h.distance;
                     float side = Vector3.Dot(h.point - transform.position, right);
                     avoid = (side >= 0f ? -1f : 1f) * avoidStrength;
+                    _dbgAvoid = true;
                 }
             }
 
             return avoid;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!debugGizmos || !Application.isPlaying) return;
+
+            // Steer target (the relaxed, off-centre line point it's aiming at).
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, _dbgTarget);
+            Gizmos.DrawWireSphere(_dbgTarget, 0.4f);
+
+            // Forward sensor: cyan = clear, magenta = avoiding a wall, green = jumping.
+            Vector3 origin = transform.position + Vector3.up * 0.5f;
+            Gizmos.color = _dbgJump ? Color.green : (_dbgAvoid ? Color.magenta : Color.cyan);
+            Gizmos.DrawLine(origin, _dbgSenseEnd);
+            Gizmos.DrawWireSphere(_dbgSenseEnd, senseRadius);
         }
     }
 }
