@@ -76,3 +76,23 @@
     justify-content: center;
 }
 .is-hidden { display: none; }
+
+/* ---- back button chip (select screens; not in the mock art, theme-styled) ---- */
+.nav-back {
+    position: absolute;
+    left: 130px; top: 120px;
+    width: 148px; height: 60px;
+    background-color: rgba(8, 8, 9, 0.62);
+    border-width: 2px;
+    border-color: var(--accent);
+    border-radius: 14px;
+    align-items: center;
+    justify-content: center;
+}
+.nav-back__label {
+    color: var(--accent);
+    font-size: 30px;
+    letter-spacing: 4px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}

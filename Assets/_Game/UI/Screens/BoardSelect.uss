@@ -138,7 +138,22 @@
 .bs-watchad  { left: 823px;  background-image: url("../../../Art/UI/board%20selec/AD%20unlock.png"); }
 .bs-buy      { left: 1068px; background-image: url("../../../Art/UI/board%20selec/buy.png"); }
 .bs-select   { left: 1313px; background-image: url("../../../Art/UI/board%20selec/seelct.png"); }
-.bs-nextbtn  { left: 1558px; background-image: url("../../../Art/UI/board%20selec/next.png"); }
+/* START button: themed (no baked-text art) so it reads "START" instead of "NEXT" */
+.bs-nextbtn  {
+    left: 1558px;
+    background-image: none;
+    background-color: rgb(247, 167, 30);
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+}
+.bs-next-label {
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    letter-spacing: 3px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
 .bs-ad-badge {
     position: absolute;
     left: -8px; top: -10px;

@@ -14,6 +14,11 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label bs-ad-left-label" />
             </ui:VisualElement>
 
+            <!-- back to character select (not in mock; theme-styled) -->
+            <ui:Button name="bs-back" class="sprite-btn nav-back">
+                <ui:Label text="BACK" class="nav-back__label" picking-mode="Ignore" />
+            </ui:Button>
+
             <!-- carousel panel -->
             <ui:VisualElement name="bs-panel" class="bs-panel">
                 <ui:VisualElement class="bs-title" />
@@ -38,7 +43,9 @@
             </ui:Button>
             <ui:Button name="bs-buy"    class="sprite-btn bs-btn bs-buy" />
             <ui:Button name="bs-select" class="sprite-btn bs-btn bs-select" />
-            <ui:Button name="bs-next"   class="sprite-btn bs-btn bs-nextbtn" />
+            <ui:Button name="bs-next"   class="sprite-btn bs-btn bs-nextbtn">
+                <ui:Label text="START" class="bs-next-label" picking-mode="Ignore" />
+            </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

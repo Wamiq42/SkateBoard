@@ -65,3 +65,32 @@
     background-image: url("../../../Art/UI/gameplay/Pause.png");
     -unity-background-scale-mode: scale-to-fit;
 }
+
+/* ---- top-left position/rank pill (minimal overlay) ----------------- */
+.hud-rank {
+    position: absolute;
+    left: 70px; top: 110px;
+    min-width: 118px; height: 70px;
+    padding-left: 20px; padding-right: 20px;
+    background-color: rgba(8, 8, 9, 0.5);
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+}
+.hud-rank-label {
+    color: var(--text-light);
+    font-size: 40px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+
+/* ---- centered 3-2-1-GO countdown ----------------------------------- */
+.hud-countdown {
+    position: absolute;
+    left: 0; right: 0; top: 330px;
+    -unity-text-align: middle-center;
+    color: var(--accent);
+    font-size: 220px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}

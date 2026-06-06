@@ -24,6 +24,9 @@ namespace Mixtape.UITK
         public float rotateSpeed = 35f;
         public float previewYaw = 180f;
 
+        /// <summary>Nav hooks assigned by <see cref="UIRouter"/>. SELECT advances (onProceed).</summary>
+        public Action onProceed, onBack;
+
         // ui refs
         private VisualElement _charImg;
         private VisualElement _fAcc, _fSta, _fHea, _fSpe;
@@ -67,6 +70,7 @@ namespace Mixtape.UITK
             Bind(root, "cs-select", Select);
             Bind(root, "cs-buy", Buy);
             Bind(root, "cs-watchad", WatchAd);
+            Bind(root, "cs-back", () => { if (onBack != null) onBack(); else Debug.Log("[CharSelect] BACK (no router)"); });
 
             BuildRig();
             _index = GameManager.Instance != null ? GameManager.Instance.Data.selectedCharacter : 0;
@@ -196,6 +200,8 @@ namespace Mixtape.UITK
             if (!IsUnlocked(_index)) return;
             SetSelected(_index);
             Debug.Log("[CharSelect] selected " + _index);
+            // SELECT confirms the character and advances to Board select (per design).
+            if (onProceed != null) onProceed();
         }
 
         public void Buy()

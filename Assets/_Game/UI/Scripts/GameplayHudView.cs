@@ -1,40 +1,278 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Mixtape.Core;
+using Mixtape.Gameplay;
+using Mixtape.InputCtrl;
+using Mixtape.Ads;
 
 namespace Mixtape.UITK
 {
     /// <summary>
-    /// UI Toolkit in-race HUD (sandbox rebuild). Holds only the player control
-    /// buttons (steer left/right, jump, double-jump, booster) and pause.
-    /// Built UI-only for now: the buttons just log. They get wired to the real
-    /// gameplay (InputService / PhysicsSkater / pause) once every UITK panel is
-    /// built and a UITK screen router replaces the Canvas HUDController.
-    /// Null-guarded so it runs standalone in the UIToolkitTesting scene.
+    /// In-race HUD + coordinator (UI Toolkit). Replaces the legacy uGUI <c>HUDController</c>.
+    /// Drives the on-screen controls into <see cref="InputService"/>, runs the pause / objective /
+    /// level-complete popups (each its own UIDocument), shows a transient 3-2-1-GO countdown and a
+    /// small position/rank pill, and hands off to Level Complete on finish.
+    ///
+    /// Mechanics note (see HANDOFF.md "to add"): only steer / jump / boost exist today, so both
+    /// booster buttons map to the existing boost and the double-jump button is a visible no-op
+    /// until a real double-jump mechanic is added. Every singleton + ref is null-guarded so the
+    /// overlay still runs standalone in the UIToolkitTesting sandbox.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class GameplayHudView : MonoBehaviour
     {
+        [Header("Other in-race UI documents (GameObjects with their *View)")]
+        public GameObject pauseUI;          // PauseView
+        public GameObject objectiveUI;      // ObjectiveView
+        public GameObject levelCompleteUI;  // LevelCompleteView
+        public GameObject adRewardUI;       // AdRewardView (optional; trigger TBD)
+
+        [Header("Flow")]
+        [Tooltip("Show the Objective popup (time frozen) the moment the race starts. Off by default until the objective has real content; the popup is still wired and can be shown via ShowObjective().")]
+        public bool showObjectiveAtStart = false;
+        [Tooltip("Coin reward by finishing place (1st, 2nd, 3rd...).")]
+        public int[] coinRewards = { 100, 50, 25 };
+
+        private InputService _input;
+        private RaceManager _race;
+
+        private VisualElement _rankPill;
+        private Label _rankLabel;
+        private Label _countdown;
+        private VisualElement[] _controls;
+        private bool _objectiveShown;
+        private bool _paused;
+        private bool _subscribed;
+
         private void OnEnable()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
             if (root == null) return;
 
-            // Steering and jumps are press-and-hold in-game; wiring will use
-            // PointerDown/Up. For the UI-only pass a click stub is enough.
-            Bind(root, "left-btn",     () => Debug.Log("[GameplayHudView] STEER LEFT (not wired yet)"));
-            Bind(root, "right-btn",    () => Debug.Log("[GameplayHudView] STEER RIGHT (not wired yet)"));
-            Bind(root, "jump-btn",     () => Debug.Log("[GameplayHudView] JUMP (not wired yet)"));
-            Bind(root, "djump-btn",    () => Debug.Log("[GameplayHudView] DOUBLE JUMP (not wired yet)"));
-            Bind(root, "booster-btn",  () => Debug.Log("[GameplayHudView] BOOSTER (green) (not wired yet)"));
-            Bind(root, "booster2-btn", () => Debug.Log("[GameplayHudView] BOOSTER (white) (not wired yet)"));
-            Bind(root, "pause-btn",    () => Debug.Log("[GameplayHudView] PAUSE (not wired yet)"));
+            _rankPill  = root.Q<VisualElement>("rank-pill");
+            _rankLabel = root.Q<Label>("rank-label");
+            _countdown = root.Q<Label>("countdown");
+
+            // ---- steering: press-and-hold via pointer events ----
+            HoldSteer(root.Q<Button>("left-btn"),  -1f);
+            HoldSteer(root.Q<Button>("right-btn"), +1f);
+
+            // ---- jump (tap) ----
+            Click(root.Q<Button>("jump-btn"), () => _input?.PressJump());
+
+            // ---- boost: both boosters hold the existing speed boost ----
+            HoldBoost(root.Q<Button>("booster-btn"));
+            HoldBoost(root.Q<Button>("booster2-btn"));
+
+            // ---- double-jump: no mechanic yet -> visible no-op (see HANDOFF.md) ----
+            Click(root.Q<Button>("djump-btn"), () => Debug.Log("[HUD] DOUBLE JUMP pressed (no mechanic yet)"));
+
+            // ---- pause (always available, even during the intro) ----
+            Click(root.Q<Button>("pause-btn"), TogglePause);
+
+            // the steer/jump/boost controls only do something once the race is live
+            // (the skater is gated inactive until then), so keep them hidden during the
+            // intro + countdown and reveal them on GO — mirrors the old HUD.
+            _controls = new VisualElement[]
+            {
+                root.Q<Button>("left-btn"), root.Q<Button>("right-btn"),
+                root.Q<Button>("jump-btn"), root.Q<Button>("djump-btn"),
+                root.Q<Button>("booster-btn"), root.Q<Button>("booster2-btn"),
+            };
+
+            // popups start hidden; wire their hooks
+            SetActive(pauseUI, false);
+            SetActive(objectiveUI, false);
+            SetActive(levelCompleteUI, false);
+            SetActive(adRewardUI, false);
+            WirePopups();
+
+            // rank hidden until the race is running
+            SetHidden(_rankPill, true);
+            SetHidden(_countdown, true);
         }
 
-        private static void Bind(VisualElement root, string name, Action cb)
+        // Singletons + event subscription happen in Start so they're guaranteed past
+        // InputService/RaceManager Awake (OnEnable can run before another object's Awake).
+        private void Start()
         {
-            var btn = root.Q<Button>(name);
-            if (btn != null) btn.clicked += cb;
+            _input = InputService.Instance;
+            _race  = RaceManager.Instance;
+            if (_race != null && !_subscribed)
+            {
+                _race.CountdownTick += OnCountdown;
+                _race.RaceStarted   += OnRaceStarted;
+                _race.RaceFinished  += OnRaceFinished;
+                _subscribed = true;
+                // hide the controls until the race actually starts (real game).
+                // In the standalone sandbox (no RaceManager) leave them visible.
+                SetControlsVisible(false);
+            }
         }
+
+        private void SetControlsVisible(bool v)
+        {
+            if (_controls == null) return;
+            foreach (var c in _controls)
+                if (c != null) c.style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void OnDisable()
+        {
+            if (_subscribed && _race != null)
+            {
+                _race.CountdownTick -= OnCountdown;
+                _race.RaceStarted   -= OnRaceStarted;
+                _race.RaceFinished  -= OnRaceFinished;
+                _subscribed = false;
+            }
+        }
+
+        private void Update()
+        {
+            if (_race != null && _race.IsRunning && _rankLabel != null)
+                _rankLabel.text = $"{_race.PlayerPlace}/{_race.RacerCount}";
+        }
+
+        // ---------- control wiring ----------
+        private void HoldSteer(Button b, float dir)
+        {
+            if (b == null) return;
+            // TrickleDown: a Button's built-in Clickable consumes PointerDown in the bubble
+            // phase (StopImmediatePropagation), so we must catch it on the way DOWN.
+            b.RegisterCallback<PointerDownEvent>(_ => { if (dir < 0) _input?.SteerLeftDown(); else _input?.SteerRightDown(); }, TrickleDown.TrickleDown);
+            b.RegisterCallback<PointerUpEvent>(_ => ReleaseSteer(dir));
+            b.RegisterCallback<PointerLeaveEvent>(_ => ReleaseSteer(dir));
+        }
+
+        private void ReleaseSteer(float dir)
+        {
+            if (_input == null) return;
+            // only release if we're the side currently steering (so the other button isn't cancelled)
+            if (dir < 0 && _input.Steer < 0) _input.SteerRelease();
+            else if (dir > 0 && _input.Steer > 0) _input.SteerRelease();
+        }
+
+        private void HoldBoost(Button b)
+        {
+            if (b == null) return;
+            // TrickleDown so the Button's Clickable doesn't swallow PointerDown (see HoldSteer).
+            b.RegisterCallback<PointerDownEvent>(_ => _input?.SetBoostHeld(true), TrickleDown.TrickleDown);
+            b.RegisterCallback<PointerUpEvent>(_ => _input?.SetBoostHeld(false));
+            b.RegisterCallback<PointerLeaveEvent>(_ => _input?.SetBoostHeld(false));
+        }
+
+        // ---------- countdown / race events ----------
+        private void OnCountdown(int n)
+        {
+            if (_countdown == null) return;
+            StopAllCoroutines();
+            StartCoroutine(CountdownPop(n));
+        }
+
+        private IEnumerator CountdownPop(int n)
+        {
+            SetHidden(_countdown, false);
+            _countdown.text = n > 0 ? n.ToString() : "GO!";
+            _countdown.style.scale = new StyleScale(new Scale(Vector3.one * 1.4f));
+            float t = 0f;
+            while (t < 0.35f)
+            {
+                t += Time.unscaledDeltaTime;
+                float s = Mathf.Lerp(1.4f, 1f, t / 0.35f);
+                _countdown.style.scale = new StyleScale(new Scale(new Vector3(s, s, 1f)));
+                yield return null;
+            }
+            if (n == 0)
+            {
+                yield return new WaitForSecondsRealtime(0.4f);
+                SetHidden(_countdown, true);
+            }
+        }
+
+        private void OnRaceStarted()
+        {
+            SetHidden(_rankPill, false);
+            SetControlsVisible(true);
+            if (showObjectiveAtStart && objectiveUI != null && !_objectiveShown)
+            {
+                _objectiveShown = true;
+                Time.timeScale = 0f;            // freeze until the player acknowledges
+                SetActive(objectiveUI, true);
+            }
+        }
+
+        private void OnRaceFinished(bool won, int place)
+        {
+            Time.timeScale = 1f;
+            SetControlsVisible(false);
+            int reward = 0;
+            if (won || place >= 1)
+            {
+                int idx = Mathf.Clamp(place - 1, 0, coinRewards.Length - 1);
+                reward = won ? coinRewards[idx] : 0;
+            }
+            if (reward > 0) GameManager.Instance?.AddCoins(reward);
+
+            SetActive(levelCompleteUI, true);
+            var lc = levelCompleteUI != null ? levelCompleteUI.GetComponent<LevelCompleteView>() : null;
+            // score/combo/tricks/distance aren't tracked yet (see HANDOFF.md) -> 0s + the coin reward.
+            lc?.SetResults(reward * 10, 0, 0, 0f, reward);
+        }
+
+        // ---------- pause ----------
+        private void TogglePause()
+        {
+            if (_paused) Resume();
+            else
+            {
+                _paused = true;
+                Time.timeScale = 0f;
+                SetActive(pauseUI, true);
+            }
+        }
+
+        private void Resume()
+        {
+            _paused = false;
+            SetActive(pauseUI, false);
+            Time.timeScale = 1f;
+        }
+
+        private void WirePopups()
+        {
+            var pause = pauseUI != null ? pauseUI.GetComponent<PauseView>() : null;
+            if (pause != null)
+            {
+                pause.onResume  = Resume;
+                pause.onRestart = () => { Time.timeScale = 1f; GameManager.Instance?.ReloadCurrent(); };
+                pause.onHome    = () => { Time.timeScale = 1f; GameManager.Instance?.LoadMainMenu(); };
+            }
+
+            var obj = objectiveUI != null ? objectiveUI.GetComponent<ObjectiveView>() : null;
+            if (obj != null)
+                obj.onOk = () => { SetActive(objectiveUI, false); Time.timeScale = 1f; };
+
+            var ad = adRewardUI != null ? adRewardUI.GetComponent<AdRewardView>() : null;
+            if (ad != null)
+                ad.onGetNow = () => AdManager.ShowRewarded("hud_reward", ok =>
+                {
+                    if (ok && _race != null && _race.player != null) _race.player.ApplyBoost(2.2f, 4f);
+                    SetActive(adRewardUI, false);
+                });
+        }
+
+        /// <summary>Public hook so a future trigger can show the Objective popup (freezes time until OK).</summary>
+        public void ShowObjective() { if (objectiveUI != null) { Time.timeScale = 0f; SetActive(objectiveUI, true); } }
+
+        /// <summary>Public hook so a future trigger can offer the rewarded-ad popup mid-game.</summary>
+        public void ShowAdReward() => SetActive(adRewardUI, true);
+
+        // ---------- helpers ----------
+        private static void Click(Button b, Action cb) { if (b != null) b.clicked += cb; }
+        private static void SetActive(GameObject go, bool on) { if (go != null && go.activeSelf != on) go.SetActive(on); }
+        private static void SetHidden(VisualElement ve, bool hidden) { if (ve != null) ve.EnableInClassList("is-hidden", hidden); }
     }
 }

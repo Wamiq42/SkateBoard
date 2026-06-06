@@ -12,6 +12,14 @@
             <ui:VisualElement name="pause-icon" class="hud-pause-icon" picking-mode="Ignore" />
         </ui:Button>
 
+        <!-- top-left position/rank pill (minimal overlay, not in the mock) -->
+        <ui:VisualElement name="rank-pill" class="hud-rank" picking-mode="Ignore">
+            <ui:Label name="rank-label" text="1/3" class="hud-rank-label" />
+        </ui:VisualElement>
+
+        <!-- centered 3-2-1-GO countdown (transient; toggled by the view) -->
+        <ui:Label name="countdown" text="" class="hud-countdown is-hidden" picking-mode="Ignore" />
+
         <!-- bottom-left steering -->
         <ui:Button name="left-btn"  class="sprite-btn hud-arrow hud-left" />
         <ui:Button name="right-btn" class="sprite-btn hud-arrow hud-right" />

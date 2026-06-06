@@ -14,6 +14,11 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label cs-ad-left-label" />
             </ui:VisualElement>
 
+            <!-- back to menu (not in mock; theme-styled) -->
+            <ui:Button name="cs-back" class="sprite-btn nav-back">
+                <ui:Label text="BACK" class="nav-back__label" picking-mode="Ignore" />
+            </ui:Button>
+
             <!-- title -->
             <ui:VisualElement class="cs-title">
                 <ui:VisualElement class="cs-title-text" />

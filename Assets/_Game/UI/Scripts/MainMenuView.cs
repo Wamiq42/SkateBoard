@@ -25,6 +25,9 @@ namespace Mixtape.UITK
         public string moreGamesUrl = "https://play.google.com/store";
         public string privacyUrl = "https://example.com/privacy";
 
+        /// <summary>Nav hook: PLAY pressed. Assigned by <see cref="UIRouter"/>.</summary>
+        public System.Action onPlay;
+
         private Label _coinLabel;
         private Button _soundOn;
         private Button _soundOff;
@@ -99,11 +102,10 @@ namespace Mixtape.UITK
         // ---- actions (mirror MainMenuController) ----
         private void Play()
         {
-            // The real front-end now switches panels via the Canvas ScreenManager
-            // (Play -> Character screen). The UITK rebuild will get its own screen
-            // router once the Character/Board panels are rebuilt; until then this
-            // sandbox menu just logs so it stays self-contained.
-            Debug.Log("[MainMenuView] PLAY pressed (Character screen not rebuilt yet)");
+            // UIRouter assigns onPlay (-> Character screen). In the standalone sandbox
+            // (no router) this just logs.
+            if (onPlay != null) onPlay();
+            else Debug.Log("[MainMenuView] PLAY pressed (no UIRouter in sandbox)");
         }
 
         private void OpenSettings() => SetHidden(_settingsPopup, false);

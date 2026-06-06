@@ -23,6 +23,9 @@ namespace Mixtape.UITK
         public Vector3 boardEuler = new Vector3(-90f, 0f, 0f);
         public float spinSpeed = 45f;
 
+        /// <summary>Nav hooks assigned by <see cref="UIRouter"/>.</summary>
+        public Action onNext, onBack;
+
         private class Card
         {
             public VisualElement root, img, coin;
@@ -75,7 +78,8 @@ namespace Mixtape.UITK
             Bind(root, "bs-select",     Select);
             Bind(root, "bs-buy",        Buy);
             Bind(root, "bs-watchad",    WatchAd);
-            Bind(root, "bs-next",       () => Debug.Log("[BoardSelect] proceed (next screen not wired)"));
+            Bind(root, "bs-next",       Proceed);
+            Bind(root, "bs-back",       () => { if (onBack != null) onBack(); else Debug.Log("[BoardSelect] BACK (no router)"); });
 
             _rig = new GameObject("BoardPreviewRig");
             _rig.transform.position = new Vector3(12000f, 0f, 0f);
@@ -245,6 +249,14 @@ namespace Mixtape.UITK
             if (!IsUnlocked(_focus)) return;
             if (GameManager.Instance != null) GameManager.Instance.SelectBoard(_focus);
             Debug.Log("[BoardSelect] selected " + _focus);
+        }
+
+        /// <summary>NEXT: confirm the focused board (if owned) and advance to the race.</summary>
+        private void Proceed()
+        {
+            if (IsUnlocked(_focus) && GameManager.Instance != null) GameManager.Instance.SelectBoard(_focus);
+            if (onNext != null) onNext();
+            else Debug.Log("[BoardSelect] NEXT (no router)");
         }
 
         private void Buy()
