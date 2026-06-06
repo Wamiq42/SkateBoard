@@ -51,6 +51,7 @@ namespace Mixtape.Gameplay
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
         public Vector3 Velocity => _rb != null ? _rb.linearVelocity : Vector3.zero;
+        public bool IsBoosting => _boostTimer > 0f;
 
         private Rigidbody _rb;
         private float _speed;
