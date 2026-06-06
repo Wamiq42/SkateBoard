@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/BoardSelect.uss" />
+
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement name="stage" class="bg-cover bs-stage">
+
+            <!-- reserved ad rails -->
+            <ui:VisualElement class="ad-slot bs-ad-top">
+                <ui:Label text="AD BANNER" class="ad-slot__label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="ad-slot bs-ad-left">
+                <ui:Label text="AD BANNER" class="ad-slot__label bs-ad-left-label" />
+            </ui:VisualElement>
+
+            <!-- carousel panel -->
+            <ui:VisualElement name="bs-panel" class="bs-panel">
+                <ui:VisualElement class="bs-title" />
+
+                <!-- horizontal drag scroller; cards are built by the view -->
+                <ui:ScrollView name="bs-scroll" class="bs-scroll" mode="Horizontal"
+                               horizontal-scroller-visibility="Hidden"
+                               vertical-scroller-visibility="Hidden" />
+
+                <ui:VisualElement class="bs-slider">
+                    <ui:VisualElement name="bs-slider-fill" class="bs-slider-fill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- carousel arrows -->
+            <ui:Button name="bs-prev" class="sprite-btn bs-arrow bs-arrow-left" />
+            <ui:Button name="bs-next-arrow" class="sprite-btn bs-arrow bs-arrow-right" />
+
+            <!-- action buttons -->
+            <ui:Button name="bs-watchad" class="sprite-btn bs-btn bs-watchad">
+                <ui:VisualElement name="bs-ad-badge" class="bs-ad-badge" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="bs-buy"    class="sprite-btn bs-btn bs-buy" />
+            <ui:Button name="bs-select" class="sprite-btn bs-btn bs-select" />
+            <ui:Button name="bs-next"   class="sprite-btn bs-btn bs-nextbtn" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,148 @@
+/* =====================================================================
+   Board Select — carousel of board cards. Measured from
+   0-mockups/boards.jpg in 1920x1080 reference. Phase 1: chrome + card
+   placeholders. Phase 2 adds per-board 3D renders + carousel/data.
+   ===================================================================== */
+.bs-stage {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../../../Art/UI/panels-bg.jpg");
+}
+
+/* reserved ad rails */
+.bs-ad-top {
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    height: 96px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+.bs-ad-left {
+    position: absolute;
+    left: 0; top: 96px; bottom: 0;
+    width: 110px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+.bs-ad-left-label {
+    rotate: -90deg;
+    white-space: nowrap;
+    font-size: 22px;
+    letter-spacing: 6px;
+}
+
+/* carousel panel */
+.bs-panel {
+    position: absolute;
+    left: 320px; top: 235px;
+    width: 1400px; height: 680px;
+    background-image: url("../../../Art/UI/board%20selec/Panel.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.bs-title {
+    position: absolute;
+    left: 480px; top: 30px;
+    width: 440px; height: 36px;
+    background-image: url("../../../Art/UI/board%20selec/SELECT%20Skateboard.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* horizontal drag scroller holding the cards */
+.bs-scroll {
+    position: absolute;
+    left: 28px; right: 28px; top: 96px;
+    height: 470px;
+}
+.bs-scroll .unity-scroll-view__content-container {
+    flex-direction: row;
+    align-items: center;
+}
+.bs-scroll .unity-scroll-view__content-viewport {
+    overflow: hidden;
+}
+.bs-card {
+    width: 290px; height: 450px;
+    margin-right: 56px;
+    flex-shrink: 0;
+    background-image: url("../../../Art/UI/board%20selec/card%20.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    flex-direction: column;
+    align-items: center;
+}
+.bs-card-img {
+    width: 232px; height: 300px;
+    margin-top: 26px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* focused card highlight */
+.bs-card--focus {
+    scale: 1.04 1.04;
+}
+.bs-card-label {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 22px;
+    height: 48px;
+}
+.bs-card-own {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+.bs-card-coin {
+    width: 34px; height: 34px;
+    margin-right: 9px;
+    background-image: url("../../../Art/UI/board%20selec/coin.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.bs-card-price {
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+
+/* carousel position slider (bottom of panel) */
+.bs-slider {
+    position: absolute;
+    left: 390px; right: 390px; bottom: 38px;
+    height: 14px;
+    background-image: url("../../../Art/UI/board%20selec/slider%20back.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.bs-slider-fill {
+    position: absolute;
+    left: 0; top: 0;
+    width: 150px; height: 14px;
+    background-image: url("../../../Art/UI/board%20selec/slider.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* carousel arrows (flanking the panel) */
+.bs-arrow {
+    position: absolute;
+    top: 510px;
+    width: 95px; height: 97px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.bs-arrow-left  { left: 190px;  background-image: url("../../../Art/UI/board%20selec/arrow%202.png"); }
+.bs-arrow-right { left: 1735px; background-image: url("../../../Art/UI/board%20selec/arrow.png"); }
+
+/* action buttons (bottom row) */
+.bs-btn {
+    position: absolute;
+    top: 958px;
+    width: 220px; height: 73px;
+}
+.bs-watchad  { left: 823px;  background-image: url("../../../Art/UI/board%20selec/AD%20unlock.png"); }
+.bs-buy      { left: 1068px; background-image: url("../../../Art/UI/board%20selec/buy.png"); }
+.bs-select   { left: 1313px; background-image: url("../../../Art/UI/board%20selec/seelct.png"); }
+.bs-nextbtn  { left: 1558px; background-image: url("../../../Art/UI/board%20selec/next.png"); }
+.bs-ad-badge {
+    position: absolute;
+    left: -8px; top: -10px;
+    width: 36px; height: 36px;
+    background-image: url("../../../Art/UI/board%20selec/AD%20copy%202.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
