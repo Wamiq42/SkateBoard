@@ -1,0 +1,111 @@
+/* =====================================================================
+   Loading — full-bleed autumn background (shared with the menu) with a
+   logo, coin pill and a bottom progress bar. Measured from
+   0-mockups/loading.jpg in 1920x1080 reference space.
+   ===================================================================== */
+
+.load-root {
+    flex-grow: 1;
+}
+
+/* full-screen background art behind everything */
+.load-stage {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../../../Art/UI/menu-BG.jpg");
+}
+
+/* dotted halftone print texture over the art */
+.load-halftone {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("../Art/halftone.png");
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0.35;
+}
+
+/* short reserved top banner ad strip */
+.load-ad-top {
+    position: absolute;
+    left: 0; top: 0; right: 0;
+    height: 96px;
+    background-color: rgba(8, 8, 9, 0.82);
+}
+
+/* ---- top-right coin pill ------------------------------------------- */
+.load-coin-pill {
+    position: absolute;
+    right: 45px; top: 150px;
+    width: 212px; height: 78px;
+    background-image: url("../../../Art/UI/1-empty/coin%20bar%20copy.png");
+    -unity-background-scale-mode: scale-to-fit;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 24px;
+}
+.load-coin-text {
+    color: rgb(255, 255, 255);
+    font-size: 38px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+}
+
+/* ---- logo (swappable placeholder image) --------------------------- */
+.load-logo {
+    position: absolute;
+    left: 890px; top: 378px;
+    width: 620px; height: 125px;
+    background-image: url("../../../Art/UI/menui/LOGO%20HERE.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* ---- bottom progress row ------------------------------------------- */
+.load-row {
+    position: absolute;
+    left: 500px; right: 45px; bottom: 34px;
+    height: 40px;
+    flex-direction: row;
+    align-items: center;
+}
+/* baked cyan "LOADING GAME" wordmark */
+.load-label {
+    width: 226px; height: 29px;
+    background-image: url("../../../Art/UI/loading/LOADING%20GAME.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* baked cyan trailing dots */
+.load-dots {
+    width: 77px; height: 9px;
+    margin-left: 12px; margin-right: 20px;
+    align-self: flex-end;
+    margin-bottom: 4px;
+    background-image: url("../../../Art/UI/loading/dots%20.%20.%20.%20.%20..png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* progress track (dark) fills the remaining width */
+.load-bar {
+    flex-grow: 1;
+    height: 11px;
+    background-image: url("../../../Art/UI/loading/bar.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+/* progress fill (yellow), width is driven from LoadingView */
+.load-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background-image: url("../../../Art/UI/loading/bar%20filler.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+/* dynamic percentage text (matches the baked 85% wordmark colour) */
+.load-pct {
+    margin-left: 20px;
+    min-width: 90px;
+    color: rgb(255, 222, 0);
+    font-size: 34px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+}

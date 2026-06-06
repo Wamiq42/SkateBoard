@@ -1,0 +1,67 @@
+/* =====================================================================
+   Gameplay HUD — transparent in-race overlay. Only the player control
+   buttons (steer L/R, jump, double-jump, booster) and pause. The live
+   race renders behind it. Laid out in 1920x1080 reference space,
+   anchored to the bottom/right edges so it survives narrow aspects.
+   ===================================================================== */
+
+.hud-root {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* circular control buttons — each sprite has its frame baked in (181x187).
+   Sized to the mock's measured ring diameter (~145px). */
+.hud-ctrl {
+    position: absolute;
+    width: 145px;
+    height: 150px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* steering arrows read a touch larger than the action cluster (as in the mock) */
+.hud-arrow {
+    position: absolute;
+    width: 170px;
+    height: 176px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* ---- bottom-left steering ----------------------------------------- */
+.hud-left  { left: 70px;  bottom: 70px;
+    background-image: url("../../../Art/UI/gameplay/left.png"); }
+.hud-right { left: 268px; bottom: 70px;
+    background-image: url("../../../Art/UI/gameplay/right.png"); }
+
+/* ---- bottom-right action cluster (diamond, centers read off a grid overlay on the mock) --
+   Grid-verified circle centers in 1920x1080: green (1478,555), white (1622,648),
+   right/double-jump (1810,778), bottom/jump (1615,898). White + jump share x≈1618;
+   green sits up-left, the double-jump skater juts out to the right. */
+/* green booster (top-left of the diamond) */
+.hud-booster-g { right: 370px; bottom: 450px;
+    background-image: url("../../../Art/UI/gameplay/booster%20copy.png"); }
+/* white booster (upper-middle of the diamond) */
+.hud-booster-w { right: 226px; bottom: 357px;
+    background-image: url("../../../Art/UI/gameplay/booster.png"); }
+/* double-jump skater (right point of the diamond) */
+.hud-djump     { right: 38px;  bottom: 227px;
+    background-image: url("../../../Art/UI/gameplay/double%20jump.png"); }
+/* jump skater (bottom point, directly under the white booster) */
+.hud-jump      { right: 233px; bottom: 107px;
+    background-image: url("../../../Art/UI/gameplay/jump.png"); }
+
+/* ---- top-right pause (glyph has no frame baked in; add a soft chip) -- */
+.hud-pause {
+    position: absolute;
+    right: 60px; top: 120px;
+    width: 78px; height: 78px;
+    border-radius: 18px;
+    background-color: rgba(8, 8, 9, 0.55);
+    align-items: center;
+    justify-content: center;
+}
+.hud-pause-icon {
+    width: 36px; height: 44px;
+    background-image: url("../../../Art/UI/gameplay/Pause.png");
+    -unity-background-scale-mode: scale-to-fit;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/GameplayHud.uss" />
+
+    <!-- transparent overlay: the live race renders behind this. Only the player
+         control buttons + pause live here (nothing else, per the design). -->
+    <ui:VisualElement name="root" class="screen hud-root" picking-mode="Ignore">
+
+        <!-- top-right pause -->
+        <ui:Button name="pause-btn" class="sprite-btn hud-pause">
+            <ui:VisualElement name="pause-icon" class="hud-pause-icon" picking-mode="Ignore" />
+        </ui:Button>
+
+        <!-- bottom-left steering -->
+        <ui:Button name="left-btn"  class="sprite-btn hud-arrow hud-left" />
+        <ui:Button name="right-btn" class="sprite-btn hud-arrow hud-right" />
+
+        <!-- bottom-right action cluster (diamond): green + white booster,
+             double-jump and jump, matching the mock arrangement. -->
+        <ui:Button name="booster-btn"  class="sprite-btn hud-ctrl hud-booster-g" />
+        <ui:Button name="booster2-btn" class="sprite-btn hud-ctrl hud-booster-w" />
+        <ui:Button name="djump-btn"    class="sprite-btn hud-ctrl hud-djump" />
+        <ui:Button name="jump-btn"     class="sprite-btn hud-ctrl hud-jump" />
+
+    </ui:VisualElement>
+</ui:UXML>

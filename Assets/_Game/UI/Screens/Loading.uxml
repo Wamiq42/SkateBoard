@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/Loading.uss" />
+
+    <ui:VisualElement name="root" class="screen load-root">
+
+        <!-- full-bleed background art (same autumn scene as the menu) -->
+        <ui:VisualElement name="stage" class="bg-cover load-stage">
+
+            <!-- dotted halftone overlay (purely cosmetic) -->
+            <ui:VisualElement name="halftone" class="load-halftone" picking-mode="Ignore" />
+
+            <!-- reserved top banner ad slot (short strip over the art) -->
+            <ui:VisualElement name="ad-top" class="ad-slot load-ad-top">
+                <ui:Label text="AD BANNER" class="ad-slot__label" />
+            </ui:VisualElement>
+
+            <!-- top-right coin pill -->
+            <ui:VisualElement name="coin-pill" class="load-coin-pill">
+                <ui:Label name="coin-label" text="7,000" class="load-coin-text" />
+            </ui:VisualElement>
+
+            <!-- logo (swappable placeholder image) -->
+            <ui:VisualElement name="logo" class="load-logo" />
+
+            <!-- bottom progress row: LOADING GAME .... [====bar====] 85% -->
+            <ui:VisualElement name="load-row" class="load-row" picking-mode="Ignore">
+                <ui:VisualElement name="load-label" class="load-label" />
+                <ui:VisualElement name="load-dots" class="load-dots" />
+                <ui:VisualElement name="load-bar" class="load-bar">
+                    <ui:VisualElement name="load-fill" class="load-fill" />
+                </ui:VisualElement>
+                <ui:Label name="load-pct" text="0%" class="load-pct" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
