@@ -72,8 +72,6 @@ namespace Mixtape.Gameplay
         public int JumpsUsed => _jumpsUsed;
         /// <summary>How far along the speed ramp we are (0 = startSpeed, 1 = full cruise). Telemetry.</summary>
         public float RampProgress => rampTime > 0.01f ? Mathf.Clamp01(_rampT / rampTime) : 1f;
-        /// <summary>Fires on each successful jump with the jump number (1 = first, 2 = double-jump).</summary>
-        public event System.Action<int> Jumped;
 
         private Rigidbody _rb;
         private float _speed;
@@ -115,11 +113,10 @@ namespace Mixtape.Gameplay
         {
             if (_jumpsUsed >= maxJumps) return;
             if (IsGrounded) _jumpsUsed = 0;
-            _airVelY = jumpSpeed;       // reset upward velocity each jump (so the 2nd jump pops fresh)
+            _airVelY = jumpSpeed;
             _jumpsUsed++;
             _airborne = true;
             IsGrounded = false;
-            Jumped?.Invoke(_jumpsUsed);
         }
 
         public void Teleport(Vector3 pos, Vector3 forward)

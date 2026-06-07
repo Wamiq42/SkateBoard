@@ -16,9 +16,9 @@ namespace Mixtape.UITK
     /// small position/rank pill, and hands off to Level Complete on finish.
     ///
     /// Mechanics note (see HANDOFF.md "to add"): both booster buttons still map to the existing
-    /// boost. The double-jump button is now wired (it queues a jump; PhysicsSkater grants up to
-    /// maxJumps). Every singleton + ref is null-guarded so the overlay still runs standalone in
-    /// the UIToolkitTesting sandbox.
+    /// boost. The former double-jump button now triggers a TRICK JUMP (a normal jump + board
+    /// kickflip) — plain double-jump was removed (player maxJumps = 1). Every singleton + ref is
+    /// null-guarded so the overlay still runs standalone in the UIToolkitTesting sandbox.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class GameplayHudView : MonoBehaviour
@@ -66,8 +66,8 @@ namespace Mixtape.UITK
             HoldBoost(root.Q<Button>("booster-btn"));
             HoldBoost(root.Q<Button>("booster2-btn"));
 
-            // ---- double-jump: same queue as jump; PhysicsSkater allows up to maxJumps ----
-            Click(root.Q<Button>("djump-btn"), () => _input?.PressJump());
+            // ---- trick jump: jumps (like the jump button) + board kickflip (was double-jump) ----
+            Click(root.Q<Button>("djump-btn"), DoTrick);
 
             // ---- pause (always available, even during the intro) ----
             Click(root.Q<Button>("pause-btn"), TogglePause);
@@ -262,6 +262,14 @@ namespace Mixtape.UITK
                     if (ok && _race != null && _race.player != null) _race.player.ApplyBoost(2.2f, 4f);
                     SetActive(adRewardUI, false);
                 });
+        }
+
+        // Trigger the player's trick jump (jump + board kickflip). Null-guarded for the sandbox.
+        private void DoTrick()
+        {
+            var p = _race != null ? _race.player : null;
+            if (p == null) return;
+            p.GetComponent<RiderAnimDriver>()?.Trick();
         }
 
         /// <summary>Public hook so a future trigger can show the Objective popup (freezes time until OK).</summary>

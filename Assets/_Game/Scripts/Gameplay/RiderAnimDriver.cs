@@ -19,6 +19,7 @@ namespace Mixtape.Gameplay
         public string jumpTrigger = "Jump";
         public string boostParam = "Boost";
         public string pushTrigger = "Push";
+        public string trickTrigger = "Trick";
 
         private RiderVisual _rider;
         private PhysicsSkater _ps;
@@ -26,9 +27,10 @@ namespace Mixtape.Gameplay
         private Animator _board;
         private WheelSpinner _wheels;
 
-        private int _sH, _gH, _jH, _bH, _pH;
+        private int _sH, _gH, _jH, _bH, _pH, _tH;
         private bool _wasGrounded = true;
         private bool _wasMoving;
+        private bool _trickPending;   // next takeoff animates as a kickflip (set by Trick())
 
         private void Awake()
         {
@@ -39,19 +41,17 @@ namespace Mixtape.Gameplay
             _jH = Animator.StringToHash(jumpTrigger);
             _bH = Animator.StringToHash(boostParam);
             _pH = Animator.StringToHash(pushTrigger);
+            _tH = Animator.StringToHash(trickTrigger);
         }
 
-        private void OnEnable()  { if (_ps != null) _ps.Jumped += OnJumped; }
-        private void OnDisable() { if (_ps != null) _ps.Jumped -= OnJumped; }
-
-        // The first jump is already animated by the grounded->airborne edge below; this fires
-        // the pop again on the mid-air double-jump (no ground edge to catch it otherwise).
-        private void OnJumped(int n)
+        /// <summary>Trick jump: launches with the same jump as the jump button, but flags this
+        /// takeoff so the board does a KICKFLIP instead of the normal ollie. Only from the ground
+        /// (it consumes the jump). Driven by the HUD trick button + keyboard trick key.</summary>
+        public void Trick()
         {
-            if (n < 2) return;
-            Grab();
-            if (_anim  != null) _anim.SetTrigger(_jH);
-            if (_board != null) _board.SetTrigger(_jH);
+            if (_ps == null || !_ps.IsGrounded) return;
+            _ps.JumpRequested = true;   // real jump (same height as the jump button)
+            _trickPending = true;       // the next takeoff animates as a kickflip
         }
 
         private void Grab()
@@ -79,11 +79,13 @@ namespace Mixtape.Gameplay
             }
             if (_board != null) _board.SetBool(_bH, boosting);
 
-            // Jump = the moment we leave the ground (works for player input and AI alike).
+            // Takeoff = the moment we leave the ground (works for player input and AI alike).
+            // The rider ollies either way; the board kickflips if this was a trick jump.
             if (_wasGrounded && !grounded)
             {
                 if (_anim != null) _anim.SetTrigger(_jH);
-                if (_board != null) _board.SetTrigger(_jH);
+                if (_board != null) _board.SetTrigger(_trickPending ? _tH : _jH);
+                _trickPending = false;
             }
             _wasGrounded = grounded;
 

@@ -20,6 +20,7 @@ namespace Mixtape.InputCtrl
         private float _uiSteer;        // -1 left, +1 right
         private bool _uiBoostHeld;
         private bool _jumpQueued;
+        private bool _trickQueued;
 
         /// <summary>Combined steer axis in [-1, 1]. Keyboard overrides when pressed.</summary>
         public float Steer
@@ -34,6 +35,9 @@ namespace Mixtape.InputCtrl
         /// <summary>True for one frame when a jump was requested (UI tap or key down).</summary>
         public bool JumpPressedThisFrame { get; private set; }
 
+        /// <summary>True for one frame when a trick was requested (UI tap or key down).</summary>
+        public bool TrickPressedThisFrame { get; private set; }
+
         /// <summary>True while a speed boost input is held.</summary>
         public bool BoostHeld => _uiBoostHeld || KeyboardBoost();
 
@@ -47,6 +51,8 @@ namespace Mixtape.InputCtrl
         {
             JumpPressedThisFrame = _jumpQueued || KeyboardJumpDown();
             _jumpQueued = false;
+            TrickPressedThisFrame = _trickQueued || KeyboardTrickDown();
+            _trickQueued = false;
         }
 
         // ---- Called by UI buttons ----
@@ -55,6 +61,7 @@ namespace Mixtape.InputCtrl
         public void SteerRightDown() => _uiSteer = 1f;
         public void SteerRelease() => _uiSteer = 0f;
         public void PressJump() => _jumpQueued = true;
+        public void PressTrick() => _trickQueued = true;
         public void SetBoostHeld(bool held) => _uiBoostHeld = held;
 
         // ---- Keyboard (editor / desktop testing) ----
@@ -82,6 +89,16 @@ namespace Mixtape.InputCtrl
             return kb != null && (kb.spaceKey.wasPressedThisFrame || kb.upArrowKey.wasPressedThisFrame || kb.wKey.wasPressedThisFrame);
 #else
             return Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W);
+#endif
+        }
+
+        private static bool KeyboardTrickDown()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var kb = Keyboard.current;
+            return kb != null && (kb.fKey.wasPressedThisFrame || kb.downArrowKey.wasPressedThisFrame);
+#else
+            return Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.DownArrow);
 #endif
         }
 

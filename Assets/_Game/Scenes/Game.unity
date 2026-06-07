@@ -148838,7 +148838,7 @@ MonoBehaviour:
   steerSpeedRef: 14
   gravity: 22
   jumpSpeed: 10.5
-  maxJumps: 2
+  maxJumps: 1
   airControl: 0.4
   landSnap: 0.25
   groundMask:
