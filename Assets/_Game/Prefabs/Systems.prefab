@@ -60,5 +60,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0961f1b2fafdb0645955a6076525b287, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Core.AudioManager
-  musicSource: {fileID: 0}
+  menuMusic: {fileID: 8300000, guid: 2eb56f7c5e04ff84b9214bc57f4acb26, type: 3}
+  raceMusic: {fileID: 8300000, guid: bd2c57b533f234c4886a83b63479444e, type: 3}
+  skateboardLoop: {fileID: 8300000, guid: b3e24d029e039e048abdfccb81131028, type: 3}
+  musicVolume: 0.6
+  crossfadeSeconds: 2.5
+  musicA: {fileID: 0}
+  musicB: {fileID: 0}
   sfxSource: {fileID: 0}

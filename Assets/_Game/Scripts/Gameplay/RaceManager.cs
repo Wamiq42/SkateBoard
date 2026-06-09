@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mixtape.Core;
 
 namespace Mixtape.Gameplay
 {
@@ -46,6 +47,12 @@ namespace Mixtape.Gameplay
 
             foreach (var r in racers) if (r != null) r.Active = false;
 
+            // Give every racer (player + AI) a 3D board loop. Done in code so newly-added
+            // AI are covered without any scene wiring.
+            foreach (var r in racers)
+                if (r != null && r.GetComponent<SkaterAudio>() == null)
+                    r.gameObject.AddComponent<SkaterAudio>();
+
             if (autoStart) yield return StartCoroutine(CountdownAndGo());
         }
 
@@ -59,6 +66,9 @@ namespace Mixtape.Gameplay
         public IEnumerator CountdownAndGo()
         {
             IsFinished = false;
+            // Crossfade cutscene/menu music into the race track as the countdown begins,
+            // so the swap completes by "GO" (the crossfade fits inside the countdown).
+            AudioManager.Instance?.PlayRaceMusic();
             for (int n = countdownFrom; n > 0; n--)
             {
                 CountdownTick?.Invoke(n);
