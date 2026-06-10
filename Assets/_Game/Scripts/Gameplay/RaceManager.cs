@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mixtape.Core;
+using Mixtape.Data;
 
 namespace Mixtape.Gameplay
 {
@@ -65,6 +66,10 @@ namespace Mixtape.Gameplay
 
             foreach (var r in racers) if (r != null) r.Active = false;
 
+            // Cast the field: the player rides the live selection (RiderVisual.useSelected),
+            // the AI take the characters the player did NOT pick, on random distinct boards.
+            CastAIRiders();
+
             // Give every racer (player + AI) a 3D board loop. Done in code so newly-added
             // AI are covered without any scene wiring.
             foreach (var r in racers)
@@ -95,6 +100,46 @@ namespace Mixtape.Gameplay
         private void OnPlayerLanded(bool wasTrick)
         {
             if (IsRunning && wasTrick) score.OnTrickLanded();
+        }
+
+        /// <summary>
+        /// Re-casts the AI riders so they never duplicate the player's selected character:
+        /// each AI's RiderVisual gets one of the NON-selected characters from the database
+        /// (the scene's forcedCharacter is just a fallback) plus a random, distinct board.
+        /// Rebuilds the visual afterwards in case its own Start() already spawned the old cast.
+        /// </summary>
+        private void CastAIRiders()
+        {
+            var gm = GameManager.Instance;
+            var db = gm != null ? gm.Database : null;
+            if (db == null || db.CharacterCount == 0) return;
+
+            int selected = Mathf.Clamp(gm.Data.selectedCharacter, 0, db.CharacterCount - 1);
+            var others = new List<CharacterDef>();
+            for (int i = 0; i < db.CharacterCount; i++)
+                if (i != selected && db.GetCharacter(i) != null) others.Add(db.GetCharacter(i));
+            if (others.Count == 0) return;
+
+            // Shuffled board indices → each AI rides a random board, no two AI on the same one.
+            var boardOrder = new List<int>();
+            for (int i = 0; i < db.BoardCount; i++) boardOrder.Add(i);
+            for (int i = boardOrder.Count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (boardOrder[i], boardOrder[j]) = (boardOrder[j], boardOrder[i]);
+            }
+
+            int next = 0;
+            foreach (var r in racers)
+            {
+                if (r == null || r == player) continue;
+                var visual = r.GetComponentInChildren<RiderVisual>(true);
+                if (visual == null || visual.useSelected) continue;   // selection-driven riders keep theirs
+                visual.forcedCharacter = others[next % others.Count];
+                if (boardOrder.Count > 0) visual.forcedBoard = db.GetBoard(boardOrder[next % boardOrder.Count]);
+                next++;
+                visual.Build();
+            }
         }
 
         /// <summary>Called by the opening intro when it finishes — begins the countdown.</summary>
