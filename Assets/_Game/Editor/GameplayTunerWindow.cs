@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using Mixtape.Core;
 using Mixtape.Gameplay;
 
 namespace Mixtape.EditorTools
@@ -31,6 +32,7 @@ namespace Mixtape.EditorTools
 
         private bool _applyToAI;
         private Vector2 _scroll;
+        private int _devCoinAmount = 1000;
 
         [MenuItem("Window/Mixtape/Gameplay Tuner")]
         public static void Open()
@@ -81,6 +83,8 @@ namespace Mixtape.EditorTools
                 _applyToAI = GUILayout.Toggle(_applyToAI, "Apply to AI", EditorStyles.toolbarButton);
                 EditorPrefs.SetBool(PrefKeyApplyToAI, _applyToAI);
             }
+
+            DrawDeveloperSection();
 
             if (_player == null)
             {
@@ -171,6 +175,74 @@ namespace Mixtape.EditorTools
                 EditorGUILayout.LabelField($"Grounded  {_player.IsGrounded,-6}  Jumps {_player.JumpsUsed}   Boost {_player.IsBoosting}");
                 EditorGUILayout.LabelField($"Ramp      {_player.RampProgress * 100f,5:0}%");
             }
+        }
+
+        // ---------------------------------------------------------------- developer (save / economy)
+        // Coins live in the PlayerPrefs save (mixtape.save.v1) and accumulate across every editor
+        // play session (each finished race pays out), hence "thousands of coins on a fresh start".
+        // While playing we edit the live GameManager data; otherwise we round-trip SaveSystem.
+        private void DrawDeveloperSection()
+        {
+            Section("Developer (save / economy)");
+            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                bool live = Application.isPlaying && GameManager.Instance != null;
+                int coins = live ? GameManager.Instance.Data.coins : SaveSystem.Load().coins;
+                EditorGUILayout.LabelField($"Coins: {coins:N0}", EditorStyles.boldLabel);
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    _devCoinAmount = EditorGUILayout.IntField("Amount", _devCoinAmount);
+                    if (GUILayout.Button("Add", GUILayout.Width(50))) ChangeCoins(c => c + _devCoinAmount);
+                    if (GUILayout.Button("Set", GUILayout.Width(50))) ChangeCoins(_ => _devCoinAmount);
+                }
+
+                if (GUILayout.Button("Reset save (fresh install)") &&
+                    EditorUtility.DisplayDialog("Reset save?",
+                        "Wipes coins, unlocks, selections and settings back to a fresh install. This cannot be undone.",
+                        "Reset", "Cancel"))
+                    ResetSave();
+
+                EditorGUILayout.LabelField(
+                    live ? "Editing the live save. Menu coin labels refresh on the next screen change."
+                         : "Writes straight to the PlayerPrefs save (mixtape.save.v1).",
+                    EditorStyles.miniLabel);
+            }
+        }
+
+        private void ChangeCoins(System.Func<int, int> change)
+        {
+            if (Application.isPlaying && GameManager.Instance != null)
+            {
+                var gm = GameManager.Instance;
+                gm.AddCoins(change(gm.Data.coins) - gm.Data.coins);   // AddCoins clamps ≥ 0 and saves
+            }
+            else
+            {
+                var d = SaveSystem.Load();
+                d.coins = Mathf.Max(0, change(d.coins));
+                SaveSystem.Save(d);
+            }
+        }
+
+        private void ResetSave()
+        {
+            SaveSystem.Clear();
+            if (Application.isPlaying && GameManager.Instance != null)
+            {
+                // The live PlayerData would just re-save itself; reset it field-by-field too.
+                var d = GameManager.Instance.Data;
+                var fresh = PlayerData.CreateDefault();
+                d.coins = fresh.coins;
+                d.selectedCharacter = fresh.selectedCharacter;
+                d.selectedBoard = fresh.selectedBoard;
+                d.unlockedCharacters = fresh.unlockedCharacters;
+                d.unlockedBoards = fresh.unlockedBoards;
+                d.soundOn = fresh.soundOn;
+                d.musicOn = fresh.musicOn;
+                GameManager.Instance.SaveData();
+            }
+            Debug.Log("[Gameplay Tuner] Save reset to fresh-install defaults.");
         }
 
         private string JumpReadout()
