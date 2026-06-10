@@ -122,6 +122,13 @@ namespace Mixtape.EditorTools
             SkaterF("Ground probe", 0, 10, s => s.groundProbe, (s, v) => s.groundProbe = v);
             SkaterF("Align speed",  0, 30, s => s.alignSpeed,  (s, v) => s.alignSpeed = v);
 
+            Section("Road edge guide (soft boundary)");
+            SkaterB("Edge guide",       s => s.edgeGuide, (s, v) => s.edgeGuide = v);
+            SkaterF("Road half-width",  1, 20,  s => s.roadHalfWidth, (s, v) => s.roadHalfWidth = v);
+            SkaterF("Soft zone",        0,  8,  s => s.edgeSoftZone,  (s, v) => s.edgeSoftZone = v);
+            SkaterF("Edge steer",       0, 600, s => s.edgeSteer,     (s, v) => s.edgeSteer = v);
+            EditorGUILayout.LabelField("Free inside the road, eased back in the soft band, clamped at the limit.", EditorStyles.miniLabel);
+
             if (_playerInput != null)
             {
                 Section("Boost");
@@ -295,6 +302,7 @@ namespace Mixtape.EditorTools
             s.steerRate = p.steerRate; s.steerSpeedRef = p.steerSpeedRef; s.airControl = p.airControl;
             s.jumpSpeed = p.jumpSpeed; s.gravity = p.gravity; s.landSnap = p.landSnap; s.maxJumps = p.maxJumps;
             s.hoverHeight = p.hoverHeight; s.groundProbe = p.groundProbe; s.alignSpeed = p.alignSpeed;
+            s.edgeGuide = p.edgeGuide; s.roadHalfWidth = p.roadHalfWidth; s.edgeSoftZone = p.edgeSoftZone; s.edgeSteer = p.edgeSteer;
             if (_playerInput != null) s.boostMultiplier = _playerInput.boostMultiplier;
             if (_cam != null)
             {
@@ -317,6 +325,7 @@ namespace Mixtape.EditorTools
                 p.steerRate = s.steerRate; p.steerSpeedRef = s.steerSpeedRef; p.airControl = s.airControl;
                 p.jumpSpeed = s.jumpSpeed; p.gravity = s.gravity; p.landSnap = s.landSnap; p.maxJumps = s.maxJumps;
                 p.hoverHeight = s.hoverHeight; p.groundProbe = s.groundProbe; p.alignSpeed = s.alignSpeed;
+                p.edgeGuide = s.edgeGuide; p.roadHalfWidth = s.roadHalfWidth; p.edgeSoftZone = s.edgeSoftZone; p.edgeSteer = s.edgeSteer;
                 DirtyObj(p);
             }
 
@@ -342,6 +351,8 @@ namespace Mixtape.EditorTools
             public float steerRate, steerSpeedRef, airControl;
             public float jumpSpeed, gravity, landSnap; public int maxJumps;
             public float hoverHeight, groundProbe, alignSpeed;
+            public bool edgeGuide = true;
+            public float roadHalfWidth = 4.5f, edgeSoftZone = 2f, edgeSteer = 240f;
             public float boostMultiplier = 1.5f;
             public Vector3 camOffset; public float posSmooth, rotSmooth, lookAhead, lookHeight;
             public bool hasCam, applyToAI;
@@ -351,7 +362,8 @@ namespace Mixtape.EditorTools
                 $"cruise={baseSpeed} max={maxSpeed} accel={accel} downhill={downhillGain} uphill={uphillDrag} | " +
                 $"steerRate={steerRate} steerRef={steerSpeedRef} air={airControl} | " +
                 $"jump={jumpSpeed} grav={gravity} land={landSnap} maxJumps={maxJumps} | " +
-                $"hover={hoverHeight} probe={groundProbe} align={alignSpeed} | boost={boostMultiplier} | " +
+                $"hover={hoverHeight} probe={groundProbe} align={alignSpeed} | " +
+                $"edge(on={edgeGuide} halfW={roadHalfWidth} soft={edgeSoftZone} steer={edgeSteer}) | boost={boostMultiplier} | " +
                 $"camOffset={camOffset} posSmooth={posSmooth} rotSmooth={rotSmooth} lookAhead={lookAhead} lookHeight={lookHeight}";
         }
     }

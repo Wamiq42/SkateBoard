@@ -141,6 +141,29 @@ namespace Mixtape.Gameplay
             return _cum[i];
         }
 
+        /// <summary>Closest point on the route polyline to p, plus the horizontal route direction
+        /// there. Used by PhysicsSkater's soft road-edge guide to measure lateral offset.</summary>
+        public Vector3 ClosestPoint(Vector3 p, out Vector3 forward)
+        {
+            int i = NearestIndex(p);
+            Vector3 best = Point(i);
+            float bestD = (best - p).sqrMagnitude;
+            forward = Forward(i);
+            for (int s = -1; s <= 0; s++)   // project onto the segments either side of the nearest point
+            {
+                int a = i + s, b = a + 1;
+                if (a < 0 || b >= _pts.Count) continue;
+                Vector3 A = _pts[a], AB = _pts[b] - A;
+                float len2 = AB.sqrMagnitude;
+                if (len2 < 1e-4f) continue;
+                float t = Mathf.Clamp01(Vector3.Dot(p - A, AB) / len2);
+                Vector3 q = A + AB * t;
+                float d = (q - p).sqrMagnitude;
+                if (d < bestD) { bestD = d; best = q; forward = Forward(a); }
+            }
+            return best;
+        }
+
         /// <summary>A point ~lookahead metres ahead along the route from p — the AI steer target.</summary>
         public Vector3 SteerTarget(Vector3 p, float lookahead)
         {

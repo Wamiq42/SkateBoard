@@ -67,6 +67,20 @@ namespace Mixtape.Gameplay
         [Tooltip("How quickly the skater brakes after crossing the finish line.")]
         public float finishBrake = 24f;
 
+        [Header("Road edge guide (soft boundary)")]
+        [Tooltip("Keeps the skater on the road WITHOUT invisible walls: free in the middle, " +
+                 "steered gently back inside the soft band near the edge, hard-clamped at the limit. " +
+                 "Measured laterally from the RaceRoute line.")]
+        public bool edgeGuide = true;
+        [Tooltip("The route the corridor follows. Auto-found in the scene when left empty.")]
+        public RaceRoute route;
+        [Tooltip("Half-width of the playable corridor (metres from the route line to the edge).")]
+        public float roadHalfWidth = 4.5f;
+        [Tooltip("Width of the guidance band inside the edge. Entering it eases you back; 0 = walls only.")]
+        public float edgeSoftZone = 2f;
+        [Tooltip("Max corrective steer (deg/s) at the very edge. Higher = firmer push back.")]
+        public float edgeSteer = 240f;
+
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
 
@@ -114,6 +128,7 @@ namespace Mixtape.Gameplay
             _heading = transform.forward;
             _heading.y = 0f; _heading.Normalize();
             if (_heading.sqrMagnitude < 0.01f) _heading = Vector3.forward;
+            if (route == null) route = FindFirstObjectByType<RaceRoute>();
         }
 
         public void ApplyBoost(float mul, float dur) { _boostMul = Mathf.Max(_boostMul, mul); _boostTimer = Mathf.Max(_boostTimer, dur); }
@@ -209,6 +224,42 @@ namespace Mixtape.Gameplay
             float yaw = steer * steerRate * speedFactor * authority * dt;
             _heading = Quaternion.AngleAxis(yaw, Vector3.up) * _heading;
             _heading.y = 0f; _heading.Normalize();
+
+            // --- Road edge guide (soft boundary) ---
+            // Replaces the old invisible side-barrier colliders: measure lateral offset from the
+            // route line; inside the road do nothing, in the soft band steer back progressively,
+            // at the hard limit clamp position and strip any outward heading (slide, don't bounce).
+            if (edgeGuide && Active && route != null && route.Count > 1)
+            {
+                Vector3 c = route.ClosestPoint(_rb.position, out Vector3 routeFwd);
+                Vector3 right = Vector3.Cross(Vector3.up, routeFwd).normalized;
+                float lat = Vector3.Dot(_rb.position - c, right);
+                float abs = Mathf.Abs(lat);
+                float softStart = Mathf.Max(0.25f, roadHalfWidth - edgeSoftZone);
+                if (abs > softStart)
+                {
+                    float side = Mathf.Sign(lat);
+                    float k = Mathf.InverseLerp(softStart, roadHalfWidth, abs);   // 0..1 across the band
+                    // ease the heading toward "route forward, leaning back inside"
+                    Vector3 desired = (routeFwd - right * (side * k)).normalized;
+                    _heading = Vector3.RotateTowards(_heading, desired, edgeSteer * k * dt * Mathf.Deg2Rad, 0f);
+                    _heading.y = 0f; _heading.Normalize();
+
+                    if (abs > roadHalfWidth)
+                    {
+                        // hard limit: clamp back to the corridor edge…
+                        _rb.position -= right * (side * (abs - roadHalfWidth));
+                        // …and remove any outward component so we glide along the edge.
+                        float outward = Vector3.Dot(_heading, right) * side;
+                        if (outward > 0f)
+                        {
+                            _heading -= right * (side * outward);
+                            if (_heading.sqrMagnitude < 0.01f) _heading = routeFwd;
+                            _heading.Normalize();
+                        }
+                    }
+                }
+            }
 
             // forward along the ground plane (tilts with slope)
             Vector3 fwdOnPlane = Vector3.ProjectOnPlane(_heading, _groundNormal).normalized;
