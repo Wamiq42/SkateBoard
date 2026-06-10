@@ -153378,7 +153378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &122386656
@@ -168373,7 +168373,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &360127116
@@ -180945,7 +180945,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &578099577
@@ -188691,7 +188691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &709204466
@@ -203276,7 +203276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &972456971
@@ -244358,7 +244358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &1705481716
@@ -253155,7 +253155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.Booster
   multiplier: 1.7
   duration: 2
-  consumable: 0
+  consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
 --- !u!23 &1863552975

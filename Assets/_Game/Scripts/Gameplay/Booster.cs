@@ -12,7 +12,7 @@ namespace Mixtape.Gameplay
         public float multiplier = 1.8f;
         public float duration = 2f;
         [Tooltip("If set, hide this object for a while after pickup instead of staying active.")]
-        public bool consumable = false;
+        public bool consumable = true;
         public float respawnDelay = 5f;
 
         [Tooltip("Optional VFX/SFX to spawn on pickup.")]
