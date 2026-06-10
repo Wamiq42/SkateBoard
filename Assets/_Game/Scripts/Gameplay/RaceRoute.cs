@@ -20,9 +20,12 @@ namespace Mixtape.Gameplay
                  "Scene view) instead of the checkpoint Transforms below. Leave null to use checkpoints.")]
         public SplineContainer spline;
 
-        [Tooltip("Which spline inside the container to follow: 0 = Level 1, 1 = Level 2, etc. " +
-                 "Set automatically by LevelManager on load.")]
+        [Tooltip("Which spline inside the container to follow when not combining: 0, 1, ...")]
         public int splineIndex = 0;
+
+        [Tooltip("Treat EVERY spline in the container as one continuous route (spline 0, then 1, ...). " +
+                 "Runs multiple track sections as a single race. Overrides splineIndex.")]
+        public bool combineAllSplines = false;
 
         [Tooltip("Approx spacing (metres) between sampled points when a spline is used. Smaller = smoother.")]
         public float sampleSpacing = 3f;
@@ -46,17 +49,11 @@ namespace Mixtape.Gameplay
             bool builtFromSpline = false;
             if (spline != null && spline.Splines != null && spline.Splines.Count > 0)
             {
-                int idx = Mathf.Clamp(splineIndex, 0, spline.Splines.Count - 1);
-                if (spline.Splines[idx].Count >= 2)
-                {
-                    // Estimate length by coarse sampling (handles any spline index / container transform).
-                    float len = 0f; Vector3 prev = EvalPos(idx, 0f);
-                    int coarse = Mathf.Max(64, spline.Splines[idx].Count * 4);
-                    for (int i = 1; i <= coarse; i++) { Vector3 p = EvalPos(idx, (float)i / coarse); len += Vector3.Distance(prev, p); prev = p; }
-                    int samples = Mathf.Max(2, Mathf.CeilToInt(len / Mathf.Max(0.5f, sampleSpacing)));
-                    for (int i = 0; i <= samples; i++) _pts.Add(EvalPos(idx, (float)i / samples));
-                    builtFromSpline = _pts.Count >= 2;
-                }
+                if (combineAllSplines)
+                    for (int si = 0; si < spline.Splines.Count; si++) AppendSplineSamples(si);
+                else
+                    AppendSplineSamples(Mathf.Clamp(splineIndex, 0, spline.Splines.Count - 1));
+                builtFromSpline = _pts.Count >= 2;
             }
             if (!builtFromSpline)
             {
@@ -83,6 +80,17 @@ namespace Mixtape.Gameplay
         {
             spline.Evaluate(idx, t, out float3 p, out _, out _);
             return (Vector3)p;
+        }
+
+        // Append a dense, arc-length-even sampling of spline `idx` to the working point list.
+        private void AppendSplineSamples(int idx)
+        {
+            if (spline.Splines[idx].Count < 2) return;
+            float len = 0f; Vector3 prev = EvalPos(idx, 0f);
+            int coarse = Mathf.Max(64, spline.Splines[idx].Count * 4);
+            for (int i = 1; i <= coarse; i++) { Vector3 p = EvalPos(idx, (float)i / coarse); len += Vector3.Distance(prev, p); prev = p; }
+            int samples = Mathf.Max(2, Mathf.CeilToInt(len / Mathf.Max(0.5f, sampleSpacing)));
+            for (int i = 0; i <= samples; i++) _pts.Add(EvalPos(idx, (float)i / samples));
         }
 
         /// <summary>Switch which spline of the container drives the route, then rebuild.</summary>
