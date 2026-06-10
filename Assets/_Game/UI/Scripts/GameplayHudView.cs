@@ -164,31 +164,46 @@ namespace Mixtape.UITK
         }
 
         // ---------- control wiring ----------
+        private float _steerHeld;   // direction currently held via the HUD buttons (0 = none)
+
         private void HoldSteer(Button b, float dir)
         {
             if (b == null) return;
-            // TrickleDown: a Button's built-in Clickable consumes PointerDown in the bubble
-            // phase (StopImmediatePropagation), so we must catch it on the way DOWN.
-            b.RegisterCallback<PointerDownEvent>(_ => { if (dir < 0) _input?.SteerLeftDown(); else _input?.SteerRightDown(); }, TrickleDown.TrickleDown);
-            b.RegisterCallback<PointerUpEvent>(_ => ReleaseSteer(dir));
+            // TrickleDown on BOTH down and up: a Button's built-in Clickable consumes pointer
+            // events in the bubble phase (StopImmediatePropagation), so a bubble-phase PointerUp
+            // never fires with a mouse — steer stayed latched until the cursor LEFT the button,
+            // which made mouse steering feel mushier than the A/D keys (instant release).
+            b.RegisterCallback<PointerDownEvent>(_ =>
+            {
+                _steerHeld = dir;
+                if (dir < 0) _input?.SteerLeftDown(); else _input?.SteerRightDown();
+            }, TrickleDown.TrickleDown);
+            b.RegisterCallback<PointerUpEvent>(_ => ReleaseSteer(dir), TrickleDown.TrickleDown);
+            // backstops: finger slid off, OS cancelled the touch, or the Clickable lost capture
             b.RegisterCallback<PointerLeaveEvent>(_ => ReleaseSteer(dir));
+            b.RegisterCallback<PointerCancelEvent>(_ => ReleaseSteer(dir), TrickleDown.TrickleDown);
+            b.RegisterCallback<PointerCaptureOutEvent>(_ => ReleaseSteer(dir));
         }
 
         private void ReleaseSteer(float dir)
         {
-            if (_input == null) return;
-            // only release if we're the side currently steering (so the other button isn't cancelled)
-            if (dir < 0 && _input.Steer < 0) _input.SteerRelease();
-            else if (dir > 0 && _input.Steer > 0) _input.SteerRelease();
+            // only release if we're the side currently steering (so the other button isn't
+            // cancelled). Tracked locally — InputService.Steer is keyboard-overridden, so it
+            // can't be trusted to tell which HUD button is held.
+            if (_steerHeld != dir) return;
+            _steerHeld = 0f;
+            _input?.SteerRelease();
         }
 
         private void HoldBoost(Button b)
         {
             if (b == null) return;
-            // TrickleDown so the Button's Clickable doesn't swallow PointerDown (see HoldSteer).
+            // TrickleDown on down AND up so the Button's Clickable can't swallow either (see HoldSteer).
             b.RegisterCallback<PointerDownEvent>(_ => _input?.SetBoostHeld(true), TrickleDown.TrickleDown);
-            b.RegisterCallback<PointerUpEvent>(_ => _input?.SetBoostHeld(false));
+            b.RegisterCallback<PointerUpEvent>(_ => _input?.SetBoostHeld(false), TrickleDown.TrickleDown);
             b.RegisterCallback<PointerLeaveEvent>(_ => _input?.SetBoostHeld(false));
+            b.RegisterCallback<PointerCancelEvent>(_ => _input?.SetBoostHeld(false), TrickleDown.TrickleDown);
+            b.RegisterCallback<PointerCaptureOutEvent>(_ => _input?.SetBoostHeld(false));
         }
 
         // ---------- countdown / race events ----------

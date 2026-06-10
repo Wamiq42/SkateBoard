@@ -1,0 +1,23 @@
+# ninja log v5
+9	1820	8027781176947092	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	f5ca49c024826c65
+93	481	8027781163622465	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	291f697aeb01856
+45	1487	8027781173573143	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	56182a899897088b
+483	796	8027781166283337	C:/Users/wamiq/Documents/GitHub/SkateBoard/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/393z476z/obj/arm64-v8a/libswappywrapper.so	bfc8e6144daf7147
+25	1480	8027781173603253	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	50d6682b6cd241b2
+58	1691	8027781175725472	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	736b2ce7b0f99d01
+1	1503	8027781173832714	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	5e009b116f2130ea
+17	1569	8027781174443674	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	27f9adbbad1063b8
+77	1528	8027781173985334	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	423bdf4961eb6cc9
+35	1727	8027781176081878	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e991e391fa8e766d
+1820	1923	8027781178053273	C:/Users/wamiq/Documents/GitHub/SkateBoard/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/393z476z/obj/arm64-v8a/libgame.so	6a3f3d9d04563b26
+67	204	8027787938628847	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	291f697aeb01856
+205	376	8027787940105330	C:/Users/wamiq/Documents/GitHub/SkateBoard/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/393z476z/obj/arm64-v8a/libswappywrapper.so	bfc8e6144daf7147
+30	829	8027787944842154	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	56182a899897088b
+25	830	8027787944847221	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	50d6682b6cd241b2
+13	843	8027787945035486	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	5e009b116f2130ea
+58	861	8027787945177916	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	423bdf4961eb6cc9
+18	897	8027787945551479	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	27f9adbbad1063b8
+49	959	8027787946142035	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	736b2ce7b0f99d01
+39	1050	8027787947092137	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e991e391fa8e766d
+6	1113	8027787947652150	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	f5ca49c024826c65
+1113	1207	8027787948638412	C:/Users/wamiq/Documents/GitHub/SkateBoard/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/393z476z/obj/arm64-v8a/libgame.so	6a3f3d9d04563b26

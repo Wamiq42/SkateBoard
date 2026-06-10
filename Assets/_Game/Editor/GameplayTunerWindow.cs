@@ -112,7 +112,10 @@ namespace Mixtape.EditorTools
             Section("Steering");
             SkaterF("Steer rate",      0, 300, s => s.steerRate,     (s, v) => s.steerRate = v);
             SkaterF("Steer speed ref", 1,  40, s => s.steerSpeedRef, (s, v) => s.steerSpeedRef = v);
+            SkaterF("Steer ramp up",   0,  20, s => s.steerRampUp,   (s, v) => s.steerRampUp = v);
+            SkaterF("Steer ramp down", 0,  20, s => s.steerRampDown, (s, v) => s.steerRampDown = v);
             SkaterF("Air control",     0,   1, s => s.airControl,    (s, v) => s.airControl = v);
+            EditorGUILayout.LabelField("Ramps ease the digital L/R input in/out: lower = smoother carve, higher = snappier. 0 = instant.", EditorStyles.miniLabel);
 
             Section("Jump (arc)");
             SkaterF("Jump speed", 0, 30, s => s.jumpSpeed, (s, v) => s.jumpSpeed = v);
@@ -131,7 +134,8 @@ namespace Mixtape.EditorTools
             SkaterF("Road half-width",  1, 20,  s => s.roadHalfWidth, (s, v) => s.roadHalfWidth = v);
             SkaterF("Soft zone",        0,  8,  s => s.edgeSoftZone,  (s, v) => s.edgeSoftZone = v);
             SkaterF("Edge steer",       0, 600, s => s.edgeSteer,     (s, v) => s.edgeSteer = v);
-            EditorGUILayout.LabelField("Free inside the road, eased back in the soft band, clamped at the limit.", EditorStyles.miniLabel);
+            SkaterF("Fall reset depth", 0,  30, s => s.fallResetDepth, (s, v) => s.fallResetDepth = v);
+            EditorGUILayout.LabelField("Free inside the road, eased back in the soft band, clamped at the limit. Fall reset teleports back onto the route after a drop.", EditorStyles.miniLabel);
 
             if (_playerInput != null)
             {
@@ -372,9 +376,11 @@ namespace Mixtape.EditorTools
             s.baseSpeed = p.baseSpeed; s.maxSpeed = p.maxSpeed; s.accel = p.accel;
             s.downhillGain = p.downhillGain; s.uphillDrag = p.uphillDrag;
             s.steerRate = p.steerRate; s.steerSpeedRef = p.steerSpeedRef; s.airControl = p.airControl;
+            s.steerRampUp = p.steerRampUp; s.steerRampDown = p.steerRampDown;
             s.jumpSpeed = p.jumpSpeed; s.gravity = p.gravity; s.landSnap = p.landSnap; s.maxJumps = p.maxJumps;
             s.hoverHeight = p.hoverHeight; s.groundProbe = p.groundProbe; s.alignSpeed = p.alignSpeed;
             s.edgeGuide = p.edgeGuide; s.roadHalfWidth = p.roadHalfWidth; s.edgeSoftZone = p.edgeSoftZone; s.edgeSteer = p.edgeSteer;
+            s.fallResetDepth = p.fallResetDepth;
             if (_playerInput != null) s.boostMultiplier = _playerInput.boostMultiplier;
             if (_cam != null)
             {
@@ -395,9 +401,11 @@ namespace Mixtape.EditorTools
                 p.baseSpeed = s.baseSpeed; p.maxSpeed = s.maxSpeed; p.accel = s.accel;
                 p.downhillGain = s.downhillGain; p.uphillDrag = s.uphillDrag;
                 p.steerRate = s.steerRate; p.steerSpeedRef = s.steerSpeedRef; p.airControl = s.airControl;
+                p.steerRampUp = s.steerRampUp; p.steerRampDown = s.steerRampDown;
                 p.jumpSpeed = s.jumpSpeed; p.gravity = s.gravity; p.landSnap = s.landSnap; p.maxJumps = s.maxJumps;
                 p.hoverHeight = s.hoverHeight; p.groundProbe = s.groundProbe; p.alignSpeed = s.alignSpeed;
                 p.edgeGuide = s.edgeGuide; p.roadHalfWidth = s.roadHalfWidth; p.edgeSoftZone = s.edgeSoftZone; p.edgeSteer = s.edgeSteer;
+                p.fallResetDepth = s.fallResetDepth;
                 DirtyObj(p);
             }
 
@@ -421,10 +429,11 @@ namespace Mixtape.EditorTools
             public float startSpeed = 12f, rampTime = 18f, rampKeepOnHit = 0.6f;
             public float baseSpeed, maxSpeed, accel, downhillGain, uphillDrag;
             public float steerRate, steerSpeedRef, airControl;
+            public float steerRampUp = 6f, steerRampDown = 9f;
             public float jumpSpeed, gravity, landSnap; public int maxJumps;
             public float hoverHeight, groundProbe, alignSpeed;
             public bool edgeGuide = true;
-            public float roadHalfWidth = 4.5f, edgeSoftZone = 2f, edgeSteer = 240f;
+            public float roadHalfWidth = 4.5f, edgeSoftZone = 2f, edgeSteer = 240f, fallResetDepth = 8f;
             public float boostMultiplier = 1.5f;
             public Vector3 camOffset; public float posSmooth, rotSmooth, lookAhead, lookHeight;
             public bool hasCam, applyToAI;
@@ -432,7 +441,7 @@ namespace Mixtape.EditorTools
             public override string ToString() =>
                 $"[Gameplay Tuner] ramp(on={useTimeRamp} start={startSpeed} time={rampTime} keepOnHit={rampKeepOnHit}) | " +
                 $"cruise={baseSpeed} max={maxSpeed} accel={accel} downhill={downhillGain} uphill={uphillDrag} | " +
-                $"steerRate={steerRate} steerRef={steerSpeedRef} air={airControl} | " +
+                $"steerRate={steerRate} steerRef={steerSpeedRef} rampUp={steerRampUp} rampDown={steerRampDown} air={airControl} | " +
                 $"jump={jumpSpeed} grav={gravity} land={landSnap} maxJumps={maxJumps} | " +
                 $"hover={hoverHeight} probe={groundProbe} align={alignSpeed} | " +
                 $"edge(on={edgeGuide} halfW={roadHalfWidth} soft={edgeSoftZone} steer={edgeSteer}) | boost={boostMultiplier} | " +

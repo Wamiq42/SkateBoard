@@ -39,6 +39,8 @@ namespace Mixtape.UITK
         private readonly List<Card> _cards = new List<Card>();
         private ScrollView _scroll;
         private VisualElement _sliderFill;
+        private Button _btnSelect, _btnBuy, _btnWatch;
+        private Label _buyPrice;
         private GameObject _rig;
         private int _focus;
 
@@ -73,6 +75,11 @@ namespace Mixtape.UITK
                 _scroll.RegisterCallback<PointerUpEvent>(OnPtrUp);
             }
 
+            _btnSelect = root.Q<Button>("bs-select");
+            _btnBuy = root.Q<Button>("bs-buy");
+            _btnWatch = root.Q<Button>("bs-watchad");
+            _buyPrice = root.Q<Label>("bs-buy-price");
+
             Bind(root, "bs-prev",       () => Nudge(-1));
             Bind(root, "bs-next-arrow", () => Nudge(1));
             Bind(root, "bs-select",     Select);
@@ -98,6 +105,7 @@ namespace Mixtape.UITK
             foreach (var c in _cards)
             {
                 if (c.model != null) Destroy(c.model);
+                if (c.cam != null) c.cam.targetTexture = null;   // detach before release (console error otherwise)
                 if (c.rt != null) { c.rt.Release(); Destroy(c.rt); }
             }
             _cards.Clear();
@@ -180,7 +188,18 @@ namespace Mixtape.UITK
                 _cards[i].lbl.text = unlocked ? "OWN" : (def != null ? def.price.ToString("N0") : "");
                 _cards[i].root.EnableInClassList("bs-card--focus", i == _focus);
             }
+
+            // action buttons follow the FOCUSED board: owned -> SELECT only;
+            // locked -> BUY (with the real price) + WATCH AD. START is always available.
+            var fDef = DB != null ? DB.GetBoard(_focus) : null;
+            bool fUnlocked = IsUnlocked(_focus);
+            Show(_btnSelect, fUnlocked);
+            Show(_btnBuy, !fUnlocked);
+            Show(_btnWatch, !fUnlocked && (fDef == null || fDef.unlockableByAd));
+            if (_buyPrice != null && fDef != null) _buyPrice.text = fDef.price.ToString("N0");
         }
+
+        private static void Show(VisualElement e, bool v) { if (e != null) e.style.display = v ? DisplayStyle.Flex : DisplayStyle.None; }
 
         // ---- arrows nudge the scroll by one card ----
         private void Nudge(int dir)

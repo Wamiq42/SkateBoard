@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Girl 3
   modelPrefab: {fileID: 919132149155446097, guid: 89b315aa78aa38548bb9ba925fbd6a7d, type: 3}
   portrait: {fileID: 0}
-  price: 250
+  price: 2500
   unlockableByAd: 1
   accuracy: 60
   stamina: 48

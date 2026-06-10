@@ -136991,6 +136991,8 @@ MonoBehaviour:
   rampKeepOnHit: 0.6
   steerRate: 110
   steerSpeedRef: 14
+  steerRampUp: 6
+  steerRampDown: 9
   gravity: 22
   jumpSpeed: 10.5
   maxJumps: 1
@@ -137003,6 +137005,12 @@ MonoBehaviour:
   groundProbe: 6
   alignSpeed: 12
   finishBrake: 24
+  edgeGuide: 1
+  route: {fileID: 0}
+  roadHalfWidth: 4.5
+  edgeSoftZone: 2
+  edgeSteer: 240
+  fallResetDepth: 8
   TrickArmed: 0
   SteerInput: 0
   JumpRequested: 0
@@ -138035,15 +138043,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -138085,13 +138093,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 41352105}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 41352104}
@@ -138123,27 +138132,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &41352105
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41352103}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1 &43534021
 GameObject:
   m_ObjectHideFlags: 0
@@ -154774,6 +154762,8 @@ MonoBehaviour:
   rampKeepOnHit: 0.6
   steerRate: 110
   steerSpeedRef: 14
+  steerRampUp: 6
+  steerRampDown: 9
   gravity: 22
   jumpSpeed: 10.5
   maxJumps: 2
@@ -154786,6 +154776,12 @@ MonoBehaviour:
   groundProbe: 6
   alignSpeed: 12
   finishBrake: 24
+  edgeGuide: 1
+  route: {fileID: 0}
+  roadHalfWidth: 4.5
+  edgeSoftZone: 2
+  edgeSteer: 240
+  fallResetDepth: 8
   TrickArmed: 0
   SteerInput: 0
   JumpRequested: 0
@@ -167322,7 +167318,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &618989536
 Transform:
   m_ObjectHideFlags: 0
@@ -205179,6 +205175,7 @@ GameObject:
   - component: {fileID: 1405436728}
   - component: {fileID: 1405436727}
   - component: {fileID: 1405436726}
+  - component: {fileID: 1405436729}
   m_Layer: 0
   m_Name: _Race
   m_TagString: Untagged
@@ -205208,7 +205205,7 @@ MonoBehaviour:
   countdownFrom: 3
   playWinCelebration: 1
   winCelebrationDuration: 5
-  celebrationDirector: {fileID: 0}
+  celebrationDirector: {fileID: 1405436729}
   celebrationCamera: {fileID: 0}
   score:
     trickBase: 100
@@ -205244,6 +205241,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1405436729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405436725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c9a0c7d275a4ad4aa7cb62f38e026d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mixtape.Gameplay.RaceCelebrationDirector
+  defaultDuration: 5
+  verticalOffset: 1.35
+  racerBurstRadius: 0.35
+  fireworkRadius: 3.4
+  fireworkHeight: 2.8
+  confettiPerRacer: 90
+  sparklePerRacer: 42
+  fireworks: 4
+  particleMaterial: {fileID: 2100000, guid: 7b2a5a10e214ba741b35732217e52a1e, type: 2}
 --- !u!114 &1406605327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206987,15 +207005,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -207037,13 +207055,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1437622660}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1437622659}
@@ -207075,27 +207094,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &1437622660
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1437622658}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1 &1440696075
 GameObject:
   m_ObjectHideFlags: 0
@@ -213646,15 +213644,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -213696,13 +213694,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1585195166}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1585195165}
@@ -213734,27 +213733,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &1585195166
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1585195164}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!43 &1588381190
 Mesh:
   m_ObjectHideFlags: 0
@@ -215980,15 +215958,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -215996,7 +215974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -85.83913
+      value: -85.01
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -216030,13 +216008,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1625855064}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1625855063}
@@ -216068,27 +216047,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &1625855064
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1625855062}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1 &1626546436
 GameObject:
   m_ObjectHideFlags: 0
@@ -217878,15 +217836,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -217928,13 +217886,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1664854784}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1664854783}
@@ -217966,27 +217925,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &1664854784
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1664854782}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1 &1665292715
 GameObject:
   m_ObjectHideFlags: 0
@@ -225122,15 +225060,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -225172,13 +225110,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1801604484}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1801604483}
@@ -225210,27 +225149,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &1801604484
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1801604482}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1 &1802781815
 GameObject:
   m_ObjectHideFlags: 0
@@ -237273,15 +237191,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 6.1999993
       objectReference: {fileID: 0}
     - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -237323,13 +237241,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 489414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2048023865}
     - targetCorrespondingSourceObject: {fileID: 189414, guid: b2cbd2ec06465274aa0aba46d00df4f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2048023864}
@@ -237361,27 +237280,6 @@ MonoBehaviour:
   consumable: 1
   respawnDelay: 5
   pickupEffect: {fileID: 0}
---- !u!65 &2048023865
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2048023863}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.24, z: 0.22}
-  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!1001 &2051220024
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -239392,6 +239290,8 @@ MonoBehaviour:
   rampKeepOnHit: 0.6
   steerRate: 110
   steerSpeedRef: 14
+  steerRampUp: 6
+  steerRampDown: 9
   gravity: 22
   jumpSpeed: 10.5
   maxJumps: 2
@@ -239404,6 +239304,12 @@ MonoBehaviour:
   groundProbe: 6
   alignSpeed: 12
   finishBrake: 24
+  edgeGuide: 1
+  route: {fileID: 0}
+  roadHalfWidth: 4.5
+  edgeSoftZone: 2
+  edgeSteer: 240
+  fallResetDepth: 8
   TrickArmed: 0
   SteerInput: 0
   JumpRequested: 0

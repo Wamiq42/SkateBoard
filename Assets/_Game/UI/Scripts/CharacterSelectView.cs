@@ -32,6 +32,7 @@ namespace Mixtape.UITK
         private VisualElement _fAcc, _fSta, _fHea, _fSpe;
         private Label _vAcc, _vSta, _vHea, _vSpe;
         private Button _btnSelect, _btnBuy, _btnWatch;
+        private Label _buyPrice;
 
         // 3d preview rig
         private Camera _cam;
@@ -64,6 +65,7 @@ namespace Mixtape.UITK
             _btnSelect = root.Q<Button>("cs-select");
             _btnBuy = root.Q<Button>("cs-buy");
             _btnWatch = root.Q<Button>("cs-watchad");
+            _buyPrice = root.Q<Label>("cs-buy-price");
 
             Bind(root, "cs-prev", Prev);
             Bind(root, "cs-next", Next);
@@ -82,6 +84,7 @@ namespace Mixtape.UITK
         {
             if (_model != null) Destroy(_model);
             if (_rig != null) Destroy(_rig);
+            if (_cam != null) _cam.targetTexture = null;   // detach before release (console error otherwise)
             if (_rt != null) { _rt.Release(); Destroy(_rt); }
             _model = null; _rig = null; _rt = null; _cam = null; _mount = null;
         }
@@ -147,11 +150,12 @@ namespace Mixtape.UITK
             SetStat(_fHea, _vHea, def != null ? def.health : 0);
             SetStat(_fSpe, _vSpe, def != null ? def.speed : 0);
 
-            // buttons: unlocked -> SELECT only; locked -> BUY + WATCH AD
+            // buttons: unlocked -> SELECT only; locked -> BUY (with the real price) + WATCH AD
             bool unlocked = IsUnlocked(_index);
             Show(_btnSelect, unlocked);
             Show(_btnBuy, !unlocked);
             Show(_btnWatch, !unlocked && (def == null || def.unlockableByAd));
+            if (_buyPrice != null && def != null) _buyPrice.text = def.price.ToString("N0");
         }
 
         private void FrameModel()

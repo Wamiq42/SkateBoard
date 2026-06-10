@@ -11,6 +11,9 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label" />
             </ui:VisualElement>
 
+            <!-- centered 1920x1080 design frame: all positioned content -->
+            <ui:VisualElement name="frame" class="design-frame">
+
             <ui:VisualElement name="lc-title" class="lc-title" />
             <ui:Label name="lc-title-lost" text="RACE LOST" class="lc-title-lost is-hidden" />
             <ui:VisualElement name="lc-stars" class="lc-stars">
@@ -52,6 +55,8 @@
             <ui:Button name="lc-restart" class="sprite-btn lc-btn lc-restart" />
             <!-- NEXT is hidden: single combined race, no next level to advance to -->
             <ui:Button name="lc-next"    class="sprite-btn lc-btn lc-next is-hidden" />
+
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

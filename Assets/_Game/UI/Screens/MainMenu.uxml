@@ -21,32 +21,36 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label menu-ad-left-label" />
             </ui:VisualElement>
 
-            <!-- top-left exit -->
-            <ui:Button name="exit-btn" class="sprite-btn menu-exit" />
+            <!-- centered 1920x1080 design frame: all positioned content -->
+            <ui:VisualElement name="frame" class="design-frame">
 
-            <!-- top-right coin pill -->
-            <ui:VisualElement name="coin-pill" class="menu-coin-pill">
-                <ui:Label name="coin-label" text="7,000" class="menu-coin-text" />
+                <!-- top-left exit -->
+                <ui:Button name="exit-btn" class="sprite-btn menu-exit" />
+
+                <!-- top-right coin pill -->
+                <ui:VisualElement name="coin-pill" class="menu-coin-pill">
+                    <ui:Label name="coin-label" text="0" class="menu-coin-text" />
+                </ui:VisualElement>
+
+                <!-- logo (swappable placeholder image) -->
+                <ui:VisualElement name="logo" class="menu-logo" />
+
+                <!-- center button stack -->
+                <ui:VisualElement name="btn-stack" class="menu-stack">
+                    <ui:Button name="settings-btn" class="sprite-btn menu-stack-btn menu-btn-settings" />
+                    <ui:Button name="rate-btn"     class="sprite-btn menu-stack-btn menu-btn-rate" />
+                    <ui:Button name="more-btn"      class="sprite-btn menu-stack-btn menu-btn-more" />
+                    <ui:Button name="privacy-btn"   class="sprite-btn menu-stack-btn menu-btn-privacy" />
+                </ui:VisualElement>
+
+                <!-- watch-ad-for-coins promo card (the side ad placement) -->
+                <ui:Button name="watchad-btn" class="sprite-btn menu-watchad">
+                    <ui:VisualElement name="ad-badge" class="menu-ad-badge" picking-mode="Ignore" />
+                </ui:Button>
+
+                <!-- play -->
+                <ui:Button name="play-btn" class="sprite-btn menu-play" />
             </ui:VisualElement>
-
-            <!-- logo (swappable placeholder image) -->
-            <ui:VisualElement name="logo" class="menu-logo" />
-
-            <!-- center button stack -->
-            <ui:VisualElement name="btn-stack" class="menu-stack">
-                <ui:Button name="settings-btn" class="sprite-btn menu-stack-btn menu-btn-settings" />
-                <ui:Button name="rate-btn"     class="sprite-btn menu-stack-btn menu-btn-rate" />
-                <ui:Button name="more-btn"      class="sprite-btn menu-stack-btn menu-btn-more" />
-                <ui:Button name="privacy-btn"   class="sprite-btn menu-stack-btn menu-btn-privacy" />
-            </ui:VisualElement>
-
-            <!-- watch-ad-for-coins promo card (the side ad placement) -->
-            <ui:Button name="watchad-btn" class="sprite-btn menu-watchad">
-                <ui:VisualElement name="ad-badge" class="menu-ad-badge" picking-mode="Ignore" />
-            </ui:Button>
-
-            <!-- play -->
-            <ui:Button name="play-btn" class="sprite-btn menu-play" />
         </ui:VisualElement>
 
         <!-- ================= SETTINGS POPUP ================= -->

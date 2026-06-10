@@ -137,9 +137,27 @@
     width: 230px; height: 78px;
     background-image: url("../../../Art/UI/character%20selec/seelct.png");
 }
+/* dynamic-price BUY: red rect styled after the old buy.png (which had a baked "2,000") */
 .cs-buy {
     position: absolute;
     right: 155px; bottom: 78px;
     width: 230px; height: 78px;
-    background-image: url("../../../Art/UI/character%20selec/buy.png");
+    background-color: rgb(232, 30, 38);
+    border-radius: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.cs-buy-word {
+    color: rgb(255, 200, 0);
+    font-size: 34px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+.cs-buy-price {
+    color: rgb(255, 255, 255);
+    font-size: 40px;
+    margin-left: 10px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
 }

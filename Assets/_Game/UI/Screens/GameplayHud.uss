@@ -11,51 +11,52 @@
 }
 
 /* circular control buttons — each sprite has its frame baked in (181x187).
-   Sized to the mock's measured ring diameter (~145px). */
+   Mock ring diameter ~145px, bumped 1.4x for comfortable touch targets. */
 .hud-ctrl {
     position: absolute;
-    width: 145px;
-    height: 150px;
+    width: 244px;
+    height: 252px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
 /* steering arrows read a touch larger than the action cluster (as in the mock) */
 .hud-arrow {
     position: absolute;
-    width: 170px;
-    height: 176px;
+    width: 286px;
+    height: 295px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
 /* ---- bottom-left steering ----------------------------------------- */
-.hud-left  { left: 70px;  bottom: 70px;
+.hud-left  { left: 50px;  bottom: 50px;
     background-image: url("../../../Art/UI/gameplay/left.png"); }
-.hud-right { left: 268px; bottom: 70px;
+.hud-right { left: 360px; bottom: 50px;
     background-image: url("../../../Art/UI/gameplay/right.png"); }
 
-/* ---- bottom-right action cluster ----------------------------------- */
-/* white booster */
-.hud-booster-w { right: 226px; bottom: 357px;
+/* ---- bottom-right action cluster: diamond spread so the button BOXES
+        never overlap (16px+ gaps even before the art's circular padding) -- */
+/* white booster (top point, directly above jump) */
+.hud-booster-w { right: 266px; bottom: 318px;
     background-image: url("../../../Art/UI/gameplay/booster.png"); }
-/* double-jump skater (right point of the diamond) */
-.hud-djump     { right: 38px;  bottom: 227px;
+/* double-jump skater (right point, vertically centred between them) */
+.hud-djump     { right: 6px;   bottom: 176px;
     background-image: url("../../../Art/UI/gameplay/double%20jump.png"); }
-/* jump skater (bottom point, directly under the white booster) */
-.hud-jump      { right: 233px; bottom: 107px;
+/* jump skater (bottom point) */
+.hud-jump      { right: 266px; bottom: 50px;
     background-image: url("../../../Art/UI/gameplay/jump.png"); }
 
 /* ---- top-right pause (glyph has no frame baked in; add a soft chip) -- */
 .hud-pause {
     position: absolute;
     right: 60px; top: 120px;
-    width: 78px; height: 78px;
-    border-radius: 18px;
+    width: 131px; height: 131px;
+    border-radius: 29px;
     background-color: rgba(8, 8, 9, 0.55);
     align-items: center;
     justify-content: center;
 }
 .hud-pause-icon {
-    width: 36px; height: 44px;
+    width: 60px; height: 74px;
     background-image: url("../../../Art/UI/gameplay/Pause.png");
     -unity-background-scale-mode: scale-to-fit;
 }

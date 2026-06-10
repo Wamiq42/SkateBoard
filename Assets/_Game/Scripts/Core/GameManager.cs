@@ -36,6 +36,9 @@ namespace Mixtape.Core
             transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
 
+            // Mobile platforms default to 30 FPS; the speed feel needs 60.
+            Application.targetFrameRate = 60;
+
             Data = SaveSystem.Load();
         }
 

@@ -208,7 +208,13 @@ namespace Mixtape.Gameplay
             var ps = go.AddComponent<ParticleSystem>();
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             Material mat = particleMaterial != null ? particleMaterial : GetRuntimeParticleMaterial();
-            if (mat != null) renderer.sharedMaterial = mat;
+            if (mat != null)
+            {
+                renderer.sharedMaterial = mat;
+                // Trails are enabled on sparks/fireworks — without an explicit trail material
+                // they render with the magenta error shader (the "purple lines").
+                renderer.trailMaterial = mat;
+            }
             return ps;
         }
 
@@ -216,13 +222,21 @@ namespace Mixtape.Gameplay
         {
             if (_runtimeMaterial != null) return _runtimeMaterial;
 
+            // Built-in RP project: use the built-in alpha-blended particle shaders (vertex-color
+            // tinted, mobile-cheap). NOTE Shader.Find only works in a device build if the shader
+            // ships — assign a real material asset to 'particleMaterial' for builds; this runtime
+            // fallback covers the sandbox/missing-reference case.
             Shader shader =
-                Shader.Find("Universal Render Pipeline/Particles/Unlit") ??
-                Shader.Find("Particles/Standard Unlit") ??
+                Shader.Find("Mobile/Particles/Alpha Blended") ??
+                Shader.Find("Legacy Shaders/Particles/Alpha Blended") ??
                 Shader.Find("Sprites/Default");
 
             if (shader == null) return null;
             _runtimeMaterial = new Material(shader) { name = "Runtime Celebration Particle Material" };
+#if UNITY_EDITOR
+            var tex = UnityEditor.AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-Particle.psd");
+            if (tex != null) _runtimeMaterial.mainTexture = tex;   // soft round dot instead of a hard quad
+#endif
             return _runtimeMaterial;
         }
     }

@@ -15,6 +15,6 @@ MonoBehaviour:
   displayName: Board 5
   modelPrefab: {fileID: 919132149155446097, guid: c732c1253374f564abebac70ca5ef1e9, type: 3}
   preview: {fileID: 0}
-  price: 300
+  price: 3000
   unlockableByAd: 1
   speedMultiplier: 1

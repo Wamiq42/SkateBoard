@@ -37,6 +37,20 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
+/* ---- centered 16:9 design frame ------------------------------------
+   Every screen is authored in a 1920x1080 reference space. PanelSettings
+   uses ScaleWithScreenSize + EXPAND match (NOT Shrink — Shrink crops!),
+   so the panel is always AT LEAST 1920x1080 — wider on 20:9 phones
+   (extra side room), taller on 4:3 tablets (extra vertical room). Positioned content lives inside
+   this fixed centered frame so the composition holds on every aspect.
+   Backgrounds + ad rails stay full-bleed OUTSIDE the frame. */
+.design-frame {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 1920px; height: 1080px;
+    translate: -50% -50%;
+}
+
 /* ---- reserved ad slots -------------------------------------------- */
 .ad-slot {
     background-color: var(--ad-fill);
@@ -77,11 +91,13 @@
 }
 .is-hidden { display: none; }
 
-/* ---- back button chip (select screens; not in the mock art, theme-styled) ---- */
+/* ---- back button chip (select screens; not in the mock art, theme-styled).
+   Sits in the SAME slot as the main menu's exit button (menu-exit) so the
+   top-left action reads consistently across screens. ---- */
 .nav-back {
     position: absolute;
-    left: 130px; top: 120px;
-    width: 148px; height: 60px;
+    left: 140px; top: 185px;
+    width: 148px; height: 66px;
     background-color: rgba(8, 8, 9, 0.62);
     border-width: 2px;
     border-color: var(--accent);

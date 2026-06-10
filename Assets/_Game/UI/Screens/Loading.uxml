@@ -16,22 +16,26 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label" />
             </ui:VisualElement>
 
-            <!-- top-right coin pill -->
-            <ui:VisualElement name="coin-pill" class="load-coin-pill">
-                <ui:Label name="coin-label" text="7,000" class="load-coin-text" />
-            </ui:VisualElement>
+            <!-- centered 1920x1080 design frame: all positioned content -->
+            <ui:VisualElement name="frame" class="design-frame">
 
-            <!-- logo (swappable placeholder image) -->
-            <ui:VisualElement name="logo" class="load-logo" />
-
-            <!-- bottom progress row: LOADING GAME .... [====bar====] 85% -->
-            <ui:VisualElement name="load-row" class="load-row" picking-mode="Ignore">
-                <ui:VisualElement name="load-label" class="load-label" />
-                <ui:VisualElement name="load-dots" class="load-dots" />
-                <ui:VisualElement name="load-bar" class="load-bar">
-                    <ui:VisualElement name="load-fill" class="load-fill" />
+                <!-- top-right coin pill -->
+                <ui:VisualElement name="coin-pill" class="load-coin-pill">
+                    <ui:Label name="coin-label" text="0" class="load-coin-text" />
                 </ui:VisualElement>
-                <ui:Label name="load-pct" text="0%" class="load-pct" />
+
+                <!-- logo (swappable placeholder image) -->
+                <ui:VisualElement name="logo" class="load-logo" />
+
+                <!-- bottom progress row: LOADING GAME .... [====bar====] 85% -->
+                <ui:VisualElement name="load-row" class="load-row" picking-mode="Ignore">
+                    <ui:VisualElement name="load-label" class="load-label" />
+                    <ui:VisualElement name="load-dots" class="load-dots" />
+                    <ui:VisualElement name="load-bar" class="load-bar">
+                        <ui:VisualElement name="load-fill" class="load-fill" />
+                    </ui:VisualElement>
+                    <ui:Label name="load-pct" text="0%" class="load-pct" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
         </ui:VisualElement>

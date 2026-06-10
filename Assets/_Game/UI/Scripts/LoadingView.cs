@@ -51,6 +51,10 @@ namespace Mixtape.UITK
             if (autoLoadTarget) StartCoroutine(LoadRoutine());
         }
 
+        // OnEnable can beat GameManager.Awake on a cold scene load; Start runs after
+        // all Awakes, so the real coin value always lands.
+        private void Start() => RefreshCoins();
+
         private void Update()
         {
             if (autoLoadTarget || fakeDuration <= 0f) return; // real load drives the bar itself
@@ -110,7 +114,7 @@ namespace Mixtape.UITK
         private void RefreshCoins()
         {
             if (_coinLabel == null) return;
-            int coins = GameManager.Instance != null ? GameManager.Instance.Data.coins : 7000;
+            int coins = GameManager.Instance != null ? GameManager.Instance.Data.coins : 0;
             _coinLabel.text = coins.ToString("N0");
         }
     }

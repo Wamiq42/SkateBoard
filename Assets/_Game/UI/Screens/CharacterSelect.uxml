@@ -14,6 +14,9 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label cs-ad-left-label" />
             </ui:VisualElement>
 
+            <!-- centered 1920x1080 design frame: all positioned content -->
+            <ui:VisualElement name="frame" class="design-frame">
+
             <!-- back to menu (not in mock; theme-styled) -->
             <ui:Button name="cs-back" class="sprite-btn nav-back">
                 <ui:Label text="BACK" class="nav-back__label" picking-mode="Ignore" />
@@ -79,7 +82,13 @@
                 <ui:VisualElement class="cs-ad-badge" picking-mode="Ignore" />
             </ui:Button>
             <ui:Button name="cs-select" class="sprite-btn cs-select" />
-            <ui:Button name="cs-buy" class="sprite-btn cs-buy" />
+            <!-- dynamic-price BUY: styled rect + labels (the old buy.png had "2,000" baked in) -->
+            <ui:Button name="cs-buy" class="sprite-btn cs-buy">
+                <ui:Label text="BUY:" class="cs-buy-word" picking-mode="Ignore" />
+                <ui:Label name="cs-buy-price" text="2,000" class="cs-buy-price" picking-mode="Ignore" />
+            </ui:Button>
+
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

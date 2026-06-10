@@ -15,6 +15,6 @@ MonoBehaviour:
   displayName: Board 2
   modelPrefab: {fileID: 919132149155446097, guid: cc90b32622dc1624a87562292bc84164, type: 3}
   preview: {fileID: 0}
-  price: 100
+  price: 1000
   unlockableByAd: 1
   speedMultiplier: 1

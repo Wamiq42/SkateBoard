@@ -136,7 +136,28 @@
     width: 220px; height: 73px;
 }
 .bs-watchad  { left: 823px;  background-image: url("../../../Art/UI/board%20selec/AD%20unlock.png"); }
-.bs-buy      { left: 1068px; background-image: url("../../../Art/UI/board%20selec/buy.png"); }
+/* dynamic-price BUY: red rect styled after the old buy.png (which had a baked price) */
+.bs-buy {
+    left: 1068px;
+    background-color: rgb(232, 30, 38);
+    border-radius: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.bs-buy-word {
+    color: rgb(255, 200, 0);
+    font-size: 30px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
+.bs-buy-price {
+    color: rgb(255, 255, 255);
+    font-size: 34px;
+    margin-left: 8px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+}
 .bs-select   { left: 1313px; background-image: url("../../../Art/UI/board%20selec/seelct.png"); }
 /* START button: themed (no baked-text art) so it reads "START" instead of "NEXT" */
 .bs-nextbtn  {

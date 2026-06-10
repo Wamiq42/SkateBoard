@@ -42,6 +42,13 @@ namespace Mixtape.Gameplay
         public float steerRate = 120f;
         [Tooltip("Steering is scaled by speed up to this value (no spinning when slow).")]
         public float steerSpeedRef = 12f;
+        [Tooltip("How fast steering eases IN toward full lock (input units/sec). The touch buttons " +
+                 "are digital (0 or 1), so without this the board snaps to full yaw rate in one tick. " +
+                 "~4 = heavy carve, ~12 = twitchy. 0 = no smoothing (instant).")]
+        public float steerRampUp = 6f;
+        [Tooltip("How fast steering returns to centre on release (input units/sec). " +
+                 "Usually a touch quicker than ramp-up so the board straightens promptly.")]
+        public float steerRampDown = 9f;
 
         [Header("Air / jump")]
         public float gravity = 22f;
@@ -80,6 +87,9 @@ namespace Mixtape.Gameplay
         public float edgeSoftZone = 2f;
         [Tooltip("Max corrective steer (deg/s) at the very edge. Higher = firmer push back.")]
         public float edgeSteer = 240f;
+        [Tooltip("If the skater ends up this far BELOW the route line (fell off a bridge/ledge), " +
+                 "teleport back onto the route and keep racing. 0 = off.")]
+        public float fallResetDepth = 8f;
 
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
@@ -103,6 +113,7 @@ namespace Mixtape.Gameplay
 
         private Rigidbody _rb;
         private float _speed;
+        private float _steer;       // smoothed steer (eases toward SteerInput)
         private Vector3 _heading = Vector3.forward;     // horizontal facing
         private Vector3 _groundNormal = Vector3.up;
         private int _jumpsUsed;
@@ -159,7 +170,7 @@ namespace Mixtape.Gameplay
             transform.position = pos;
             transform.rotation = Quaternion.LookRotation(_heading, Vector3.up);
             _rb.linearVelocity = Vector3.zero;
-            _speed = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false; _finishStopping = false;
+            _speed = 0f; _steer = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false; _finishStopping = false;
         }
 
         /// <summary>Begin a controlled finish-line brake used while the celebration camera takes over.</summary>
@@ -167,6 +178,7 @@ namespace Mixtape.Gameplay
         {
             Active = false;
             SteerInput = 0f;
+            _steer = 0f;
             JumpRequested = false;
             TrickArmed = false;
             _finishStopping = true;
@@ -217,8 +229,27 @@ namespace Mixtape.Gameplay
                 IsGrounded = hitGround;
             }
 
+            // --- Fall reset ---
+            // Fell off a bridge/ledge into the void below the track: pop back onto the route
+            // (the route line is the source of truth for where the road surface is).
+            if (fallResetDepth > 0f && Active && route != null && route.Count > 1)
+            {
+                Vector3 rc = route.ClosestPoint(_rb.position, out Vector3 routeDir);
+                if (rc.y - _rb.position.y > fallResetDepth)
+                {
+                    Teleport(rc + Vector3.up * 0.5f, routeDir);
+                    return;
+                }
+            }
+
             // --- Steering ---
-            float steer = Mathf.Clamp(SteerInput, -1f, 1f);
+            // Ease the (digital) input toward its target so the turn carves in/out instead of
+            // snapping to full yaw rate the frame a button goes down.
+            float steerTarget = Mathf.Clamp(SteerInput, -1f, 1f);
+            bool releasing = Mathf.Abs(steerTarget) < 0.01f || steerTarget * _steer < 0f;
+            float steerRamp = releasing ? steerRampDown : steerRampUp;
+            _steer = steerRamp > 0f ? Mathf.MoveTowards(_steer, steerTarget, steerRamp * dt) : steerTarget;
+            float steer = _steer;
             float speedFactor = Mathf.Clamp01(_speed / steerSpeedRef);
             float authority = IsGrounded ? 1f : airControl;
             float yaw = steer * steerRate * speedFactor * authority * dt;

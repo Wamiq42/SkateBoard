@@ -65,6 +65,11 @@ namespace Mixtape.UITK
             RefreshToggles();
         }
 
+        // OnEnable can run BEFORE GameManager.Awake on a cold scene load (Unity doesn't
+        // order them), so the first RefreshCoins may miss the save. Start runs after all
+        // Awakes, guaranteeing the real value lands.
+        private void Start() => RefreshCoins();
+
         private static void Bind(VisualElement root, string name, Action cb)
         {
             var btn = root.Q<Button>(name);
@@ -80,7 +85,7 @@ namespace Mixtape.UITK
         private void RefreshCoins()
         {
             if (_coinLabel == null) return;
-            int coins = GameManager.Instance != null ? GameManager.Instance.Data.coins : 7000;
+            int coins = GameManager.Instance != null ? GameManager.Instance.Data.coins : 0;
             _coinLabel.text = coins.ToString("N0");
         }
 
