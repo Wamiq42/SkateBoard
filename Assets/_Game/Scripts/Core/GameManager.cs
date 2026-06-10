@@ -72,8 +72,10 @@ namespace Mixtape.Core
         public void SelectLevel(int index) => SelectedLevel = Mathf.Max(0, index);
 
         // ---- Navigation ----
-        public void LoadMainMenu() => SceneManager.LoadScene(mainMenuScene);
-        public void LoadGame() => SceneManager.LoadScene(gameScene);
-        public void ReloadCurrent() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // All routes go through the Loading screen: heavy scene loads (Game especially)
+        // used to be direct LoadScene calls = a visible freeze with no feedback.
+        public void LoadMainMenu() => SceneFlow.LoadVia(mainMenuScene);
+        public void LoadGame() => SceneFlow.LoadVia(gameScene);
+        public void ReloadCurrent() => SceneFlow.LoadVia(SceneManager.GetActiveScene().name);
     }
 }

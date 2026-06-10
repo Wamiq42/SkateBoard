@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mixtape.UITK.LoadingView
   autoLoadTarget: 1
-  minDisplay: 1.2
+  minDisplay: 2
   fakeDuration: 2.5
   loopPreview: 1
 --- !u!114 &1047876723

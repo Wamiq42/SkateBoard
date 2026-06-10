@@ -62,25 +62,41 @@ namespace Mixtape.UITK
 
         private IEnumerator LoadRoutine()
         {
-            float shown = 0f;
+            Debug.Log($"[Loading] showing, target='{SceneFlow.Target}'");
+
+            // Guarantee the loading UI paints BEFORE the heavy load begins: kicking off
+            // LoadSceneAsync on the screen's very first frame can stall the main thread
+            // (editor especially) before anything was ever drawn.
+            yield return null;
+            yield return null;
+
             var op = SceneManager.LoadSceneAsync(SceneFlow.Target);
             op.allowSceneActivation = false;
 
-            float display = 0f;
-            while (!op.isDone)
+            // The bar is TIME-driven (a fixed minDisplay-seconds sweep), not progress-driven:
+            // real async progress finishes near-instantly in the editor, which made the screen
+            // activate after 1-2 rendered frames. The sweep only advances on frames the player
+            // actually sees (dt clamped — load stalls deliver multi-second deltas), and holds
+            // at 95% if the real load is genuinely slower than the sweep.
+            float shown = 0f;
+            int frames = 0;
+            while (true)
             {
-                shown += Time.unscaledDeltaTime;
-                float real = Mathf.Clamp01(op.progress / 0.9f); // progress caps at 0.9 until activation
-                display = Mathf.MoveTowards(display, real, Time.unscaledDeltaTime * 0.8f);
-                SetProgress(display);
+                float dt = Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
+                shown += dt;
+                frames++;
 
-                if (display >= 0.999f && shown >= minDisplay)
-                {
-                    SetProgress(1f);
-                    op.allowSceneActivation = true;
-                }
+                bool ready = op.progress >= 0.9f;               // async progress caps at 0.9 until activation
+                float sweep = Mathf.Clamp01(shown / Mathf.Max(0.1f, minDisplay));
+                SetProgress(ready ? sweep : Mathf.Min(sweep, 0.95f));
+
+                if (sweep >= 1f && ready) break;
                 yield return null;
             }
+
+            SetProgress(1f);
+            Debug.Log($"[Loading] held {shown:0.00}s over {frames} rendered frames, activating '{SceneFlow.Target}'");
+            op.allowSceneActivation = true;
         }
 
         /// <summary>Drive the bar + percentage from a normalised [0..1] progress.</summary>
