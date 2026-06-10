@@ -51,6 +51,7 @@ namespace Mixtape.Gameplay
         {
             if (_ps == null || !_ps.IsGrounded) return;
             _ps.JumpRequested = true;   // real jump (same height as the jump button)
+            _ps.TrickArmed = true;      // tag this jump as a trick so a clean land scores
             _trickPending = true;       // the next takeoff animates as a kickflip
         }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/Cutscene.uss" />
+
+    <ui:VisualElement name="root" class="screen cut-root">
+        <!-- transparent full-screen layer: fade overlay + tap-to-advance catcher -->
+        <ui:VisualElement name="cut-fader" class="cut-fader" />
+
+        <!-- dialogue subtitle (bottom-center) -->
+        <ui:VisualElement class="cut-subtitle">
+            <ui:Label name="cut-line" text="Tomorrow, we turn eighteen." class="cut-line" />
+        </ui:VisualElement>
+
+        <!-- skip cutscene (watch-ad to skip; AD badge marks it) -->
+        <ui:Button name="cut-skip" class="sprite-btn cut-skip">
+            <ui:VisualElement class="cut-ad-badge" picking-mode="Ignore" />
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>

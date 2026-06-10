@@ -23,12 +23,38 @@
     background-image: url("../../../Art/UI/level%20clear/LEVEL%20COMPLETE.png");
     -unity-background-scale-mode: scale-to-fit;
 }
+/* lose title (swapped in for the LEVEL COMPLETE art when the player didn't place 1st) */
+.lc-title-lost {
+    position: absolute;
+    left: 135px; top: 188px;
+    width: 900px; height: 150px;
+    -unity-text-align: middle-left;
+    color: rgb(240, 64, 58);
+    font-size: 112px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: italic;
+    -unity-text-outline-width: 3px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.65);
+}
+
+/* star rating row — 3 stars, each toggled filled/empty by the view */
 .lc-stars {
     position: absolute;
     left: 135px; top: 292px;
     width: 820px; height: 289px;
-    background-image: url("../../../Art/UI/level%20clear/stars.png");
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.lc-star {
+    width: 215px; height: 227px;
+    margin-right: 12px;
     -unity-background-scale-mode: scale-to-fit;
+    background-image: url("../../../Art/UI/level%20clear/star-empty.png");
+}
+.lc-star--mid { margin-bottom: 34px; }   /* echo the mock's raised centre star */
+.lc-star--on {
+    background-image: url("../../../Art/UI/level%20clear/star-filled.png");
 }
 
 /* stats panel */

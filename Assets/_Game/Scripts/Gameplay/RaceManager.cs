@@ -26,6 +26,12 @@ namespace Mixtape.Gameplay
         public bool autoStart = false;
         public int countdownFrom = 3;
 
+        [Header("Scoring")]
+        [Tooltip("Trick/combo score, stars rating and coin reward for the player's run. Tunables live here.")]
+        public RaceScore score = new RaceScore();
+        /// <summary>The live run scoreboard (score/combo/tricks/distance, plus stars/coins at finish).</summary>
+        public RaceScore Score => score;
+
         public event Action<int> CountdownTick;       // 3,2,1, then 0 = GO
         public event Action RaceStarted;
         public event Action<bool, int> RaceFinished;  // (playerWon, playerPlace)
@@ -36,6 +42,8 @@ namespace Mixtape.Gameplay
         public int RacerCount => racers.Count;
         public float PlayerProgress =>
             (route != null && player != null) ? Mathf.Clamp01(route.Progress(player.transform.position) / Mathf.Max(1f, route.TotalLength)) : 0f;
+
+        private float _prevProgress;
 
         private void Awake() => Instance = this;
 
@@ -53,7 +61,30 @@ namespace Mixtape.Gameplay
                 if (r != null && r.GetComponent<SkaterAudio>() == null)
                     r.gameObject.AddComponent<SkaterAudio>();
 
+            // Score tracking: listen to the player's clean-land + crash signals.
+            score ??= new RaceScore();
+            score.ResetRun();
+            if (player != null)
+            {
+                player.Landed += OnPlayerLanded;
+                player.Crashed += score.OnCrash;
+            }
+
             if (autoStart) yield return StartCoroutine(CountdownAndGo());
+        }
+
+        private void OnDestroy()
+        {
+            if (player != null)
+            {
+                player.Landed -= OnPlayerLanded;
+                player.Crashed -= score.OnCrash;
+            }
+        }
+
+        private void OnPlayerLanded(bool wasTrick)
+        {
+            if (IsRunning && wasTrick) score.OnTrickLanded();
         }
 
         /// <summary>Called by the opening intro when it finishes — begins the countdown.</summary>
@@ -82,6 +113,7 @@ namespace Mixtape.Gameplay
         {
             foreach (var r in racers) if (r != null) r.Active = true;
             IsRunning = true;
+            if (route != null && player != null) _prevProgress = route.Progress(player.transform.position);
             RaceStarted?.Invoke();
         }
 
@@ -89,8 +121,22 @@ namespace Mixtape.Gameplay
         {
             if (!IsRunning || IsFinished) return;
             UpdateRanking();
+            TickScore();
             if (route != null && player != null && route.IsFinish(player.transform.position))
                 FinishRace();
+        }
+
+        private void TickScore()
+        {
+            if (player == null) return;
+            float delta = 0f;
+            if (route != null)
+            {
+                float p = route.Progress(player.transform.position);
+                delta = Mathf.Max(0f, p - _prevProgress);   // forward-only; ignore respawn/backslide
+                _prevProgress = p;
+            }
+            score.Tick(Time.deltaTime, player.IsGrounded, delta);
         }
 
         private void UpdateRanking()
@@ -112,6 +158,7 @@ namespace Mixtape.Gameplay
             IsFinished = true;
             UpdateRanking();
             bool won = PlayerPlace == 1;
+            score.FinalizeForPlace(PlayerPlace);   // placement bonus + stars + coin reward
             foreach (var r in racers) if (r != null && r != player) r.Active = false;
             RaceFinished?.Invoke(won, PlayerPlace);
         }

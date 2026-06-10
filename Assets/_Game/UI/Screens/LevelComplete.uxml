@@ -11,8 +11,13 @@
                 <ui:Label text="AD BANNER" class="ad-slot__label" />
             </ui:VisualElement>
 
-            <ui:VisualElement class="lc-title" />
-            <ui:VisualElement class="lc-stars" />
+            <ui:VisualElement name="lc-title" class="lc-title" />
+            <ui:Label name="lc-title-lost" text="RACE LOST" class="lc-title-lost is-hidden" />
+            <ui:VisualElement name="lc-stars" class="lc-stars">
+                <ui:VisualElement name="star-0" class="lc-star" />
+                <ui:VisualElement name="star-1" class="lc-star lc-star--mid" />
+                <ui:VisualElement name="star-2" class="lc-star" />
+            </ui:VisualElement>
 
             <ui:VisualElement class="lc-panel">
                 <ui:VisualElement class="lc-stats">

@@ -84,6 +84,30 @@
     -unity-font-style: bold;
 }
 
+/* ---- top-center live score + combo ---------------------------------- */
+.hud-score {
+    position: absolute;
+    top: 36px; left: 0; right: 0;
+    align-items: center;
+    justify-content: flex-start;
+}
+.hud-score-label {
+    color: var(--text-light);
+    font-size: 66px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
+}
+.hud-combo-label {
+    color: var(--accent);
+    font-size: 46px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold-and-italic;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
+}
+
 /* ---- centered 3-2-1-GO countdown ----------------------------------- */
 .hud-countdown {
     position: absolute;

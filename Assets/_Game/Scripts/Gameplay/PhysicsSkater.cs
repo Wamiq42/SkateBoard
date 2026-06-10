@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mixtape.InputCtrl;
 
@@ -64,6 +65,15 @@ namespace Mixtape.Gameplay
 
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
+
+        // ---- Scoring hooks (read/driven by RaceManager's RaceScore) ----
+        /// <summary>Tags the CURRENT jump as a trick (set by RiderAnimDriver.Trick()).
+        /// Carried into the Landed event so a clean land scores; cleared on land or crash.</summary>
+        public bool TrickArmed;
+        /// <summary>Fired the frame a jump re-lands. Arg = was this a trick jump (TrickArmed at touchdown).</summary>
+        public event Action<bool> Landed;
+        /// <summary>Fired when a collision penalty is applied (bails any in-progress trick/combo).</summary>
+        public event Action Crashed;
         public Vector3 Velocity => _rb != null ? _rb.linearVelocity : Vector3.zero;
         public bool IsBoosting => _boostTimer > 0f;
         /// <summary>Vertical velocity (units/s); + up, - down. Handy for tuning telemetry.</summary>
@@ -107,6 +117,8 @@ namespace Mixtape.Gameplay
             _penaltyMul = Mathf.Min(_penaltyMul, Mathf.Clamp01(mul));
             _penaltyTimer = Mathf.Max(_penaltyTimer, dur);
             _rampT *= Mathf.Clamp01(rampKeepOnHit);   // collision scrubs built-up momentum
+            TrickArmed = false;                        // a crash bails the in-progress trick
+            Crashed?.Invoke();
         }
 
         public void Jump()
@@ -158,6 +170,8 @@ namespace Mixtape.Gameplay
                     _airborne = false;
                     _jumpsUsed = 0;
                     IsGrounded = true;
+                    Landed?.Invoke(TrickArmed);   // score a clean trick land; clear the tag
+                    TrickArmed = false;
                 }
                 else IsGrounded = false;
             }

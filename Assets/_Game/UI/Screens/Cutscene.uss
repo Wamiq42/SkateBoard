@@ -1,0 +1,53 @@
+/* =====================================================================
+   Opening cutscene overlay — transparent (plays over the in-game apartment
+   scene): advancing dialogue subtitle + free SKIP + watch-ad skip + a
+   full-screen fader. No ad rails (this is an in-game overlay, not a menu).
+   ===================================================================== */
+.cut-root { flex-grow: 1; }
+
+/* full-screen fader (view animates opacity for fade in/out) AND tap-to-advance
+   catcher. Transparent by default so the 3D scene shows through. */
+.cut-fader {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* dialogue subtitle band, bottom-center */
+.cut-subtitle {
+    position: absolute;
+    left: 360px; right: 360px; bottom: 130px;
+    background-color: rgba(0, 0, 0, 0.55);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    padding-left: 50px; padding-right: 50px;
+    padding-top: 24px; padding-bottom: 24px;
+    align-items: center;
+    justify-content: center;
+}
+.cut-line {
+    color: rgb(255, 255, 255);
+    font-size: 46px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* skip buttons (top-right) */
+.cut-skip {
+    position: absolute;
+    right: 48px; top: 130px;
+    width: 250px; height: 75px;
+    background-image: url("../../../Art/UI/gameplay/skip.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.cut-ad-badge {
+    position: absolute;
+    left: -6px; top: -8px;
+    width: 40px; height: 39px;
+    background-image: url("../../../Art/UI/gameplay/AD%20copy.png");
+    -unity-background-scale-mode: scale-to-fit;
+}

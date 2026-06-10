@@ -32,8 +32,6 @@ namespace Mixtape.UITK
         [Header("Flow")]
         [Tooltip("Show the Objective popup (time frozen) the moment the race starts. Off by default until the objective has real content; the popup is still wired and can be shown via ShowObjective().")]
         public bool showObjectiveAtStart = false;
-        [Tooltip("Coin reward by finishing place (1st, 2nd, 3rd...).")]
-        public int[] coinRewards = { 100, 50, 25 };
 
         private InputService _input;
         private RaceManager _race;
@@ -41,6 +39,9 @@ namespace Mixtape.UITK
         private VisualElement _rankPill;
         private Label _rankLabel;
         private Label _countdown;
+        private VisualElement _scorePill;
+        private Label _scoreLabel;
+        private Label _comboLabel;
         private VisualElement[] _controls;
         private bool _objectiveShown;
         private bool _paused;
@@ -54,6 +55,9 @@ namespace Mixtape.UITK
             _rankPill  = root.Q<VisualElement>("rank-pill");
             _rankLabel = root.Q<Label>("rank-label");
             _countdown = root.Q<Label>("countdown");
+            _scorePill  = root.Q<VisualElement>("score-pill");
+            _scoreLabel = root.Q<Label>("score-label");
+            _comboLabel = root.Q<Label>("combo-label");
 
             // ---- steering: press-and-hold via pointer events ----
             HoldSteer(root.Q<Button>("left-btn"),  -1f);
@@ -89,8 +93,9 @@ namespace Mixtape.UITK
             SetActive(adRewardUI, false);
             WirePopups();
 
-            // rank hidden until the race is running
+            // rank + score hidden until the race is running
             SetHidden(_rankPill, true);
+            SetHidden(_scorePill, true);
             SetHidden(_countdown, true);
         }
 
@@ -132,8 +137,21 @@ namespace Mixtape.UITK
 
         private void Update()
         {
-            if (_race != null && _race.IsRunning && _rankLabel != null)
+            if (_race == null || !_race.IsRunning) return;
+            if (_rankLabel != null)
                 _rankLabel.text = $"{_race.PlayerPlace}/{_race.RacerCount}";
+
+            var s = _race.Score;
+            if (s != null)
+            {
+                if (_scoreLabel != null) _scoreLabel.text = s.Score.ToString("N0");
+                if (_comboLabel != null)
+                {
+                    bool combo = s.CurrentCombo > 1;   // show the multiplier only once chaining
+                    SetHidden(_comboLabel, !combo);
+                    if (combo) _comboLabel.text = $"COMBO x{s.CurrentCombo}";
+                }
+            }
         }
 
         // ---------- control wiring ----------
@@ -195,6 +213,7 @@ namespace Mixtape.UITK
         private void OnRaceStarted()
         {
             SetHidden(_rankPill, false);
+            SetHidden(_scorePill, false);
             SetControlsVisible(true);
             if (showObjectiveAtStart && objectiveUI != null && !_objectiveShown)
             {
@@ -208,18 +227,20 @@ namespace Mixtape.UITK
         {
             Time.timeScale = 1f;
             SetControlsVisible(false);
-            int reward = 0;
-            if (won || place >= 1)
-            {
-                int idx = Mathf.Clamp(place - 1, 0, coinRewards.Length - 1);
-                reward = won ? coinRewards[idx] : 0;
-            }
+            SetHidden(_scorePill, true);
+
+            // Real run stats from RaceScore: placement bonus + stars + coin reward were computed in
+            // RaceManager.FinishRace(). Coins scale with score and are paid on every placement.
+            var s = _race != null ? _race.Score : null;
+            int reward = s != null ? s.Coins : 0;
             if (reward > 0) GameManager.Instance?.AddCoins(reward);
 
             SetActive(levelCompleteUI, true);
             var lc = levelCompleteUI != null ? levelCompleteUI.GetComponent<LevelCompleteView>() : null;
-            // score/combo/tricks/distance aren't tracked yet (see HANDOFF.md) -> 0s + the coin reward.
-            lc?.SetResults(reward * 10, 0, 0, 0f, reward);
+            if (s != null)
+                lc?.SetResults(won, s.Stars, s.Score, s.BestCombo, s.TricksLanded, s.Distance / 1000f, reward);
+            else
+                lc?.SetResults(won, won ? 3 : 1, 0, 0, 0, 0f, reward);
         }
 
         // ---------- pause ----------

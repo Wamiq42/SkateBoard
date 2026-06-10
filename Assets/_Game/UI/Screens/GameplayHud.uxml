@@ -17,6 +17,12 @@
             <ui:Label name="rank-label" text="1/3" class="hud-rank-label" />
         </ui:VisualElement>
 
+        <!-- top-center live score + combo readout (revealed on GO) -->
+        <ui:VisualElement name="score-pill" class="hud-score is-hidden" picking-mode="Ignore">
+            <ui:Label name="score-label" text="0" class="hud-score-label" />
+            <ui:Label name="combo-label" text="" class="hud-combo-label is-hidden" />
+        </ui:VisualElement>
+
         <!-- centered 3-2-1-GO countdown (transient; toggled by the view) -->
         <ui:Label name="countdown" text="" class="hud-countdown is-hidden" picking-mode="Ignore" />
 
