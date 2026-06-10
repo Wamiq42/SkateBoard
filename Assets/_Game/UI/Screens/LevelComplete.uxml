@@ -50,7 +50,8 @@
             <!-- action buttons -->
             <ui:Button name="lc-menu"    class="sprite-btn lc-btn lc-menu" />
             <ui:Button name="lc-restart" class="sprite-btn lc-btn lc-restart" />
-            <ui:Button name="lc-next"    class="sprite-btn lc-btn lc-next" />
+            <!-- NEXT is hidden: single combined race, no next level to advance to -->
+            <ui:Button name="lc-next"    class="sprite-btn lc-btn lc-next is-hidden" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -44,7 +44,8 @@ namespace Mixtape.UITK
         }
 
         /// <summary>Populate the results (called by the game at race end). The screen adapts to
-        /// win/lose: it swaps the title, fills the earned stars, and hides NEXT on a loss.</summary>
+        /// win/lose: it swaps the title and fills the earned stars. NEXT is never shown — this is a
+        /// single combined race, so there is no next level to advance to.</summary>
         public void SetResults(bool won, int stars, int score, int bestCombo, int tricksLanded, float distanceKm, int coinsEarned)
         {
             if (_score != null)    _score.text    = score.ToString("N0");
@@ -53,10 +54,11 @@ namespace Mixtape.UITK
             if (_distance != null) _distance.text = distanceKm.ToString("0.00") + " KM";
             if (_coins != null)    _coins.text    = coinsEarned.ToString("N0");
 
-            // Win shows the LEVEL COMPLETE art; a loss shows the RACE LOST label and hides NEXT.
+            // Win shows the LEVEL COMPLETE art; a loss shows the RACE LOST label.
             SetHidden(_titleWin, !won);
             SetHidden(_titleLost, won);
-            SetHidden(_next, !won);
+            // No "next level" exists in the single combined race, so NEXT stays hidden either way.
+            SetHidden(_next, true);
 
             // Light up the earned stars (empty by default).
             if (_stars != null)
