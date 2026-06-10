@@ -33,14 +33,8 @@
 .hud-right { left: 268px; bottom: 70px;
     background-image: url("../../../Art/UI/gameplay/right.png"); }
 
-/* ---- bottom-right action cluster (diamond, centers read off a grid overlay on the mock) --
-   Grid-verified circle centers in 1920x1080: green (1478,555), white (1622,648),
-   right/double-jump (1810,778), bottom/jump (1615,898). White + jump share x≈1618;
-   green sits up-left, the double-jump skater juts out to the right. */
-/* green booster (top-left of the diamond) */
-.hud-booster-g { right: 370px; bottom: 450px;
-    background-image: url("../../../Art/UI/gameplay/booster%20copy.png"); }
-/* white booster (upper-middle of the diamond) */
+/* ---- bottom-right action cluster ----------------------------------- */
+/* white booster */
 .hud-booster-w { right: 226px; bottom: 357px;
     background-image: url("../../../Art/UI/gameplay/booster.png"); }
 /* double-jump skater (right point of the diamond) */

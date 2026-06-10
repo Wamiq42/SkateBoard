@@ -30,9 +30,7 @@
         <ui:Button name="left-btn"  class="sprite-btn hud-arrow hud-left" />
         <ui:Button name="right-btn" class="sprite-btn hud-arrow hud-right" />
 
-        <!-- bottom-right action cluster (diamond): green + white booster,
-             double-jump and jump, matching the mock arrangement. -->
-        <ui:Button name="booster-btn"  class="sprite-btn hud-ctrl hud-booster-g" />
+        <!-- bottom-right action cluster: white booster, double-jump and jump. -->
         <ui:Button name="booster2-btn" class="sprite-btn hud-ctrl hud-booster-w" />
         <ui:Button name="djump-btn"    class="sprite-btn hud-ctrl hud-djump" />
         <ui:Button name="jump-btn"     class="sprite-btn hud-ctrl hud-jump" />

@@ -15,8 +15,8 @@ namespace Mixtape.UITK
     /// level-complete popups (each its own UIDocument), shows a transient 3-2-1-GO countdown and a
     /// small position/rank pill, and hands off to Level Complete on finish.
     ///
-    /// Mechanics note (see HANDOFF.md "to add"): both booster buttons still map to the existing
-    /// boost. The former double-jump button now triggers a TRICK JUMP (a normal jump + board
+    /// Mechanics note (see HANDOFF.md "to add"): the booster button maps to the existing boost.
+    /// The former double-jump button now triggers a TRICK JUMP (a normal jump + board
     /// kickflip) — plain double-jump was removed (player maxJumps = 1). Every singleton + ref is
     /// null-guarded so the overlay still runs standalone in the UIToolkitTesting sandbox.
     /// </summary>
@@ -66,8 +66,7 @@ namespace Mixtape.UITK
             // ---- jump (tap) ----
             Click(root.Q<Button>("jump-btn"), () => _input?.PressJump());
 
-            // ---- boost: both boosters hold the existing speed boost ----
-            HoldBoost(root.Q<Button>("booster-btn"));
+            // ---- boost: hold the existing speed boost ----
             HoldBoost(root.Q<Button>("booster2-btn"));
 
             // ---- trick jump: jumps (like the jump button) + board kickflip (was double-jump) ----
@@ -83,7 +82,7 @@ namespace Mixtape.UITK
             {
                 root.Q<Button>("left-btn"), root.Q<Button>("right-btn"),
                 root.Q<Button>("jump-btn"), root.Q<Button>("djump-btn"),
-                root.Q<Button>("booster-btn"), root.Q<Button>("booster2-btn"),
+                root.Q<Button>("booster2-btn"),
             };
 
             // popups start hidden; wire their hooks
