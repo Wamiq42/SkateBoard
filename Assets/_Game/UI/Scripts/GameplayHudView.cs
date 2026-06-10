@@ -42,6 +42,7 @@ namespace Mixtape.UITK
         private VisualElement _scorePill;
         private Label _scoreLabel;
         private Label _comboLabel;
+        private Button _pauseButton;
         private VisualElement[] _controls;
         private bool _objectiveShown;
         private bool _paused;
@@ -58,6 +59,7 @@ namespace Mixtape.UITK
             _scorePill  = root.Q<VisualElement>("score-pill");
             _scoreLabel = root.Q<Label>("score-label");
             _comboLabel = root.Q<Label>("combo-label");
+            _pauseButton = root.Q<Button>("pause-btn");
 
             // ---- steering: press-and-hold via pointer events ----
             HoldSteer(root.Q<Button>("left-btn"),  -1f);
@@ -72,8 +74,8 @@ namespace Mixtape.UITK
             // ---- trick jump: jumps (like the jump button) + board kickflip (was double-jump) ----
             Click(root.Q<Button>("djump-btn"), DoTrick);
 
-            // ---- pause (always available, even during the intro) ----
-            Click(root.Q<Button>("pause-btn"), TogglePause);
+            // ---- pause (available once the race/countdown begins; hidden during cutscenes) ----
+            Click(_pauseButton, TogglePause);
 
             // the steer/jump/boost controls only do something once the race is live
             // (the skater is gated inactive until then), so keep them hidden during the
@@ -108,11 +110,13 @@ namespace Mixtape.UITK
             {
                 _race.CountdownTick += OnCountdown;
                 _race.RaceStarted   += OnRaceStarted;
+                _race.RaceCelebrationStarted += OnRaceCelebrationStarted;
                 _race.RaceFinished  += OnRaceFinished;
                 _subscribed = true;
-                // hide the controls until the race actually starts (real game).
+                // hide the controls and pause until the race countdown starts (real game).
                 // In the standalone sandbox (no RaceManager) leave them visible.
                 SetControlsVisible(false);
+                SetPauseVisible(false);
             }
         }
 
@@ -123,12 +127,18 @@ namespace Mixtape.UITK
                 if (c != null) c.style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        private void SetPauseVisible(bool v)
+        {
+            if (_pauseButton != null) _pauseButton.style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
         private void OnDisable()
         {
             if (_subscribed && _race != null)
             {
                 _race.CountdownTick -= OnCountdown;
                 _race.RaceStarted   -= OnRaceStarted;
+                _race.RaceCelebrationStarted -= OnRaceCelebrationStarted;
                 _race.RaceFinished  -= OnRaceFinished;
                 _subscribed = false;
             }
@@ -185,6 +195,7 @@ namespace Mixtape.UITK
         private void OnCountdown(int n)
         {
             if (_countdown == null) return;
+            SetPauseVisible(true);
             StopAllCoroutines();
             StartCoroutine(CountdownPop(n));
         }
@@ -213,6 +224,7 @@ namespace Mixtape.UITK
         {
             SetHidden(_rankPill, false);
             SetHidden(_scorePill, false);
+            SetPauseVisible(true);
             SetControlsVisible(true);
             if (showObjectiveAtStart && objectiveUI != null && !_objectiveShown)
             {
@@ -222,10 +234,21 @@ namespace Mixtape.UITK
             }
         }
 
+        private void OnRaceCelebrationStarted(bool won, int place)
+        {
+            Time.timeScale = 1f;
+            SetControlsVisible(false);
+            SetPauseVisible(false);
+            SetHidden(_scorePill, true);
+            SetHidden(_rankPill, true);
+            SetHidden(_countdown, true);
+        }
+
         private void OnRaceFinished(bool won, int place)
         {
             Time.timeScale = 1f;
             SetControlsVisible(false);
+            SetPauseVisible(false);
             SetHidden(_scorePill, true);
 
             // Real run stats from RaceScore: placement bonus + stars + coin reward were computed in

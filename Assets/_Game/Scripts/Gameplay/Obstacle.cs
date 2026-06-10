@@ -17,11 +17,29 @@ namespace Mixtape.Gameplay
         public float slowDuration = 1.2f;
         [Tooltip("Optional VFX on hit.")]
         public GameObject hitEffect;
+        [Tooltip("Use trigger behavior for soft hazards. Disable this for props/cars the skater should physically hit.")]
+        public bool useTriggerCollider = true;
 
-        private void Reset() { var c = GetComponent<Collider>(); if (c) c.isTrigger = true; }
-        private void Awake() { var c = GetComponent<Collider>(); if (c) c.isTrigger = true; }
+        private void Reset() { ApplyColliderMode(); }
+        private void Awake() { ApplyColliderMode(); }
 
         private void OnTriggerEnter(Collider other)
+        {
+            ApplyPenalty(other);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            ApplyPenalty(collision.collider);
+        }
+
+        private void ApplyColliderMode()
+        {
+            var c = GetComponent<Collider>();
+            if (c) c.isTrigger = useTriggerCollider;
+        }
+
+        private void ApplyPenalty(Collider other)
         {
             var motor = other.GetComponentInParent<PhysicsSkater>();
             if (motor == null) return;

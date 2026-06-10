@@ -63,6 +63,10 @@ namespace Mixtape.Gameplay
         [Tooltip("How fast the board tilts to match the ground slope.")]
         public float alignSpeed = 12f;
 
+        [Header("Finish Stop")]
+        [Tooltip("How quickly the skater brakes after crossing the finish line.")]
+        public float finishBrake = 24f;
+
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
 
@@ -93,6 +97,7 @@ namespace Mixtape.Gameplay
         private float _rampT;       // elapsed time on the speed ramp (0..rampTime)
         private float _boostMul = 1f, _boostTimer;
         private float _penaltyMul = 1f, _penaltyTimer;
+        private bool _finishStopping;
 
         // External control (player sets from input; AI sets directly).
         public float SteerInput;     // -1..1
@@ -139,7 +144,23 @@ namespace Mixtape.Gameplay
             transform.position = pos;
             transform.rotation = Quaternion.LookRotation(_heading, Vector3.up);
             _rb.linearVelocity = Vector3.zero;
-            _speed = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false;
+            _speed = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false; _finishStopping = false;
+        }
+
+        /// <summary>Begin a controlled finish-line brake used while the celebration camera takes over.</summary>
+        public void StopImmediately()
+        {
+            Active = false;
+            SteerInput = 0f;
+            JumpRequested = false;
+            TrickArmed = false;
+            _finishStopping = true;
+            _boostMul = 1f;
+            _boostTimer = 0f;
+            _penaltyMul = 1f;
+            _penaltyTimer = 0f;
+            if (_rb == null) return;
+            _rb.angularVelocity = Vector3.zero;
         }
 
         private void FixedUpdate()
@@ -196,6 +217,8 @@ namespace Mixtape.Gameplay
             // --- Speed (auto-roll + gravity on slope) ---
             if (Active)
             {
+                _finishStopping = false;
+
                 // Ramp the cruise speed up over time, then hold (Subway-Surfers feel).
                 // Clamp the start to baseSpeed so a misconfigured startSpeed > baseSpeed can never
                 // make this ramp DOWN (i.e. "starts fast then slows" — only ever ramp up or hold).
@@ -211,11 +234,16 @@ namespace Mixtape.Gameplay
             }
             else
             {
-                _speed = Mathf.MoveTowards(_speed, 0f, accel * dt);
+                float brake = _finishStopping ? Mathf.Max(accel, finishBrake) : accel;
+                _speed = Mathf.MoveTowards(_speed, 0f, brake * dt);
             }
 
             // --- Jump request ---
-            if (JumpRequested) { Jump(); JumpRequested = false; }
+            if (JumpRequested)
+            {
+                if (Active) Jump();
+                JumpRequested = false;
+            }
 
             // --- Assemble velocity ---
             Vector3 vel = fwdOnPlane * _speed;

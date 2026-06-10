@@ -26,6 +26,14 @@ namespace Mixtape.Gameplay
         public bool autoStart = false;
         public int countdownFrom = 3;
 
+        [Header("Win Celebration")]
+        public bool playWinCelebration = true;
+        [Range(3f, 5f)] public float winCelebrationDuration = 5f;
+        [Tooltip("Optional. If empty, RaceManager creates one at runtime.")]
+        public RaceCelebrationDirector celebrationDirector;
+        [Tooltip("Optional. If empty, the active CameraFollow is used.")]
+        public CameraFollow celebrationCamera;
+
         [Header("Scoring")]
         [Tooltip("Trick/combo score, stars rating and coin reward for the player's run. Tunables live here.")]
         public RaceScore score = new RaceScore();
@@ -34,6 +42,7 @@ namespace Mixtape.Gameplay
 
         public event Action<int> CountdownTick;       // 3,2,1, then 0 = GO
         public event Action RaceStarted;
+        public event Action<bool, int> RaceCelebrationStarted;  // fired immediately at finish before particles/camera delay
         public event Action<bool, int> RaceFinished;  // (playerWon, playerPlace)
 
         public bool IsRunning { get; private set; }
@@ -44,6 +53,7 @@ namespace Mixtape.Gameplay
             (route != null && player != null) ? Mathf.Clamp01(route.Progress(player.transform.position) / Mathf.Max(1f, route.TotalLength)) : 0f;
 
         private float _prevProgress;
+        private Coroutine _finishRoutine;
 
         private void Awake() => Instance = this;
 
@@ -154,13 +164,61 @@ namespace Mixtape.Gameplay
 
         private void FinishRace()
         {
+            if (_finishRoutine != null) return;
+
             IsRunning = false;
             IsFinished = true;
             UpdateRanking();
             bool won = PlayerPlace == 1;
             score.FinalizeForPlace(PlayerPlace);   // placement bonus + stars + coin reward
-            foreach (var r in racers) if (r != null && r != player) r.Active = false;
-            RaceFinished?.Invoke(won, PlayerPlace);
+            StopAllRacers();
+            RaceCelebrationStarted?.Invoke(won, PlayerPlace);
+            _finishRoutine = StartCoroutine(FinishRaceSequence(won, PlayerPlace));
+        }
+
+        private IEnumerator FinishRaceSequence(bool won, int place)
+        {
+            if (won && playWinCelebration)
+            {
+                float duration = Mathf.Clamp(winCelebrationDuration, 3f, 5f);
+                var director = EnsureCelebrationDirector();
+                if (director != null)
+                    duration = director.Play(racers, player != null ? player.transform : null, duration);
+
+                var cam = EnsureCelebrationCamera();
+                if (cam != null)
+                    cam.BeginCelebrationOrbit(player != null ? player.transform : null, duration);
+
+                yield return new WaitForSeconds(duration);
+            }
+
+            RaceFinished?.Invoke(won, place);
+            _finishRoutine = null;
+        }
+
+        private void StopAllRacers()
+        {
+            if (racers == null || racers.Count == 0)
+                racers = new List<PhysicsSkater>(FindObjectsByType<PhysicsSkater>(FindObjectsSortMode.None));
+
+            foreach (var r in racers)
+                if (r != null)
+                    r.StopImmediately();
+        }
+
+        private RaceCelebrationDirector EnsureCelebrationDirector()
+        {
+            if (celebrationDirector != null) return celebrationDirector;
+            celebrationDirector = GetComponent<RaceCelebrationDirector>();
+            if (celebrationDirector == null) celebrationDirector = gameObject.AddComponent<RaceCelebrationDirector>();
+            return celebrationDirector;
+        }
+
+        private CameraFollow EnsureCelebrationCamera()
+        {
+            if (celebrationCamera != null) return celebrationCamera;
+            celebrationCamera = FindFirstObjectByType<CameraFollow>();
+            return celebrationCamera;
         }
     }
 }
