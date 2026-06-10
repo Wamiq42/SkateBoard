@@ -63,7 +63,7 @@ MonoBehaviour:
   menuMusic: {fileID: 8300000, guid: 2eb56f7c5e04ff84b9214bc57f4acb26, type: 3}
   raceMusic: {fileID: 8300000, guid: bd2c57b533f234c4886a83b63479444e, type: 3}
   skateboardLoop: {fileID: 8300000, guid: b3e24d029e039e048abdfccb81131028, type: 3}
-  musicVolume: 0.6
+  musicVolume: 0.4
   crossfadeSeconds: 2.5
   musicA: {fileID: 0}
   musicB: {fileID: 0}

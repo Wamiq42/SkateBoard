@@ -15,9 +15,9 @@ namespace Mixtape.Gameplay
     {
         [Tooltip("Speed (units/s) below which the board is treated as not rolling.")]
         public float minRollSpeed = 2f;
-        [Range(0f, 1f)] public float maxVolume = 0.7f;
+        [Range(0f, 1f)] public float maxVolume = 0.35f;
         [Tooltip("Volume floor while just barely rolling (ramps up to maxVolume at cruise).")]
-        [Range(0f, 1f)] public float minVolume = 0.25f;
+        [Range(0f, 1f)] public float minVolume = 0.1f;
         [Tooltip("3D rolloff: distance at which the board sound fades out.")]
         public float maxDistance = 35f;
         [Tooltip("Pitch when at cruise speed (1 = unaltered). Gives a sense of pace.")]
@@ -54,7 +54,12 @@ namespace Mixtape.Gameplay
             if (_src == null) return;
 
             bool soundOn = AudioManager.Instance == null || AudioManager.Instance.SoundOn;
-            bool rolling = soundOn && _skater.Active && _skater.IsGrounded && _skater.Speed > minRollSpeed;
+            // Only roll while the race is actually live. The player keeps Active=true and
+            // coasts past the finish line, so gate on RaceManager state too — otherwise the
+            // loop would keep playing after the race completes.
+            var race = RaceManager.Instance;
+            bool raceLive = race == null || (race.IsRunning && !race.IsFinished);
+            bool rolling = soundOn && raceLive && _skater.Active && _skater.IsGrounded && _skater.Speed > minRollSpeed;
 
             float cruise = Mathf.Max(1f, _skater.baseSpeed);
             float speed01 = Mathf.Clamp01(_skater.Speed / cruise);

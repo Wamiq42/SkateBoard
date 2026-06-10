@@ -30,7 +30,7 @@ namespace Mixtape.Core
         [SerializeField] private AudioClip skateboardLoop;
 
         [Header("Mix")]
-        [SerializeField, Range(0f, 1f)] private float musicVolume = 0.6f;
+        [SerializeField, Range(0f, 1f)] private float musicVolume = 0.4f;
         [Tooltip("Seconds to crossfade between music tracks (fits inside the race countdown).")]
         [SerializeField] private float crossfadeSeconds = 2.5f;
 
