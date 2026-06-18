@@ -73,9 +73,17 @@ namespace Mixtape.Core
         private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
         // sceneLoaded does not fire for the scene already open when we boot, so kick it here.
-        private void Start() => PlayMenuMusic();
+        private void Start()
+        {
+            PlayMenuMusic();
+            ApplySoundSetting();
+        }
 
-        private void OnSceneLoaded(Scene s, LoadSceneMode m) => PlayMenuMusic();
+        private void OnSceneLoaded(Scene s, LoadSceneMode m)
+        {
+            PlayMenuMusic();
+            ApplySoundSetting();   // re-assert the saved toggle every scene load
+        }
 
         /// <summary>Menu + cutscene ambient track. No-op if it is already the current track.</summary>
         public void PlayMenuMusic() => Crossfade(menuMusic);
@@ -135,6 +143,18 @@ namespace Mixtape.Core
             _activeMusic.clip = clip;
             _activeMusic.volume = volume;
             if (MusicOn) _activeMusic.Play();
+        }
+
+        /// <summary>
+        /// Master apply of the sound toggle. Drives <see cref="AudioListener.volume"/> so
+        /// EVERYTHING (music, the 3D board loops, and one-shots from any source) honours the
+        /// toggle the instant it changes, then pauses/resumes the music source to match.
+        /// Called when the toggle changes and on every scene load so the saved setting wins.
+        /// </summary>
+        public void ApplySoundSetting()
+        {
+            AudioListener.volume = SoundOn ? 1f : 0f;
+            RefreshMusicState();
         }
 
         /// <summary>Pause/resume the music to match the PlayerData music toggle.</summary>

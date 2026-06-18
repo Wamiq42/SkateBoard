@@ -83,6 +83,7 @@ namespace Mixtape.Gameplay
             {
                 player.Landed += OnPlayerLanded;
                 player.Crashed += score.OnCrash;
+                player.reportFall = true;   // player falls raise FellOff → Resume popup (AI self-recover)
             }
 
             if (autoStart) yield return StartCoroutine(CountdownAndGo());

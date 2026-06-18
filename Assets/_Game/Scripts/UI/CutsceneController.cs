@@ -24,12 +24,30 @@ namespace Mixtape.UI
         [Tooltip("The posed friends / set-dressing placed in the apartment for the intro; hidden on finish.")]
         public GameObject introStage;
 
+        /// <summary>
+        /// Set true just before reloading the Game scene to skip the opening intro on the next
+        /// load (used by the auto-restart loop: finish → result → restart with no cutscene).
+        /// Consumed (cleared) the moment it is honoured so a later fresh play still gets the intro.
+        /// </summary>
+        public static bool SkipNextIntro;
+
         private bool _finished;
 
         private void OnEnable()
         {
             _finished = false;
             if (view != null) view.onFinish += Finish;
+        }
+
+        // Start runs after every Awake, so RaceManager.Instance is ready here. If a skip was
+        // requested, jump straight to gameplay (no dialogue, no skip-button frame).
+        private void Start()
+        {
+            if (SkipNextIntro)
+            {
+                SkipNextIntro = false;
+                Finish();
+            }
         }
 
         private void OnDisable()

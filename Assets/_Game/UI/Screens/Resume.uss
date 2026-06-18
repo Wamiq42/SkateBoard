@@ -1,0 +1,43 @@
+/* "You fell!" overlay — reuses the pause panel art + a 3-button stack.
+   resume-ad = watch ad to resume (with AD badge), restart, home. */
+.resume-panel {
+    width: 1000px; height: 568px;
+    background-image: url("../../../Art/UI/pause/Panel.png");
+    -unity-background-scale-mode: scale-to-fit;
+    align-items: center;
+}
+.resume-title {
+    position: absolute;
+    top: 50px; left: 0; right: 0;
+    -unity-text-align: middle-center;
+    color: var(--text-light);
+    font-size: 56px;
+    -unity-font-definition: var(--font);
+    -unity-font-style: bold;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.55);
+}
+.resume-stack {
+    position: absolute;
+    top: 160px; left: 315px;
+    width: 370px;
+    flex-direction: column;
+    align-items: center;
+}
+.resume-btn {
+    width: 370px; height: 80px;
+    margin-bottom: 22px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* watch-ad-to-resume reuses the resume sprite; the AD badge marks it as ad-gated */
+.resume-resume  { background-image: url("../../../Art/UI/pause/resume.png"); }
+.resume-restart { background-image: url("../../../Art/UI/pause/Restart.png"); }
+.resume-home    { background-image: url("../../../Art/UI/pause/home.png"); }
+
+.resume-ad-badge {
+    position: absolute;
+    left: -10px; top: -12px;
+    width: 56px; height: 55px;
+    background-image: url("../../../Art/UI/gameplay/AD%20copy.png");
+    -unity-background-scale-mode: scale-to-fit;
+}

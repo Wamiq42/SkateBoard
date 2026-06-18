@@ -28,13 +28,24 @@ namespace Mixtape.UITK
         public GameObject objectiveUI;      // ObjectiveView
         public GameObject levelCompleteUI;  // LevelCompleteView
         public GameObject adRewardUI;       // AdRewardView (optional; trigger TBD)
+        public GameObject resumeUI;         // ResumeView (shown when the player falls off the track)
 
         [Header("Flow")]
         [Tooltip("Show the Objective popup (time frozen) the moment the race starts. Off by default until the objective has real content; the popup is still wired and can be shown via ShowObjective().")]
         public bool showObjectiveAtStart = false;
 
+        [Header("Finish → restart transition")]
+        [Tooltip("Beat to hold on the final frame after the race ends before the screen cuts to black.")]
+        public float finishHold = 0.5f;
+        [Tooltip("Duration of the cut-to-black at finish and the fade-back-in on the restarted run.")]
+        public float fadeDuration = 0.5f;
+
+        /// <summary>Set just before a fade-restart so the freshly loaded HUD opens fully black and fades in.</summary>
+        public static bool FadeInOnStart;
+
         private InputService _input;
         private RaceManager _race;
+        private VisualElement _root;
 
         private VisualElement _rankPill;
         private Label _rankLabel;
@@ -47,11 +58,23 @@ namespace Mixtape.UITK
         private bool _objectiveShown;
         private bool _paused;
         private bool _subscribed;
+        private Coroutine _countdownCo;
 
         private void OnEnable()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
             if (root == null) return;
+            _root = root;
+
+            // Restart-from-finish: open the HUD fully black so the very first painted frame is
+            // black (no flash of the start line), then Start() fades it back in.
+            if (FadeInOnStart)
+            {
+                var overlay = UIFx.EnsureFadeOverlay(root);
+                overlay.style.display = DisplayStyle.Flex;
+                overlay.pickingMode = UnityEngine.UIElements.PickingMode.Position;
+                overlay.style.opacity = 1f;
+            }
 
             _rankPill  = root.Q<VisualElement>("rank-pill");
             _rankLabel = root.Q<Label>("rank-label");
@@ -92,6 +115,7 @@ namespace Mixtape.UITK
             SetActive(objectiveUI, false);
             SetActive(levelCompleteUI, false);
             SetActive(adRewardUI, false);
+            SetActive(resumeUI, false);
             WirePopups();
 
             // rank + score hidden until the race is running
@@ -112,11 +136,19 @@ namespace Mixtape.UITK
                 _race.RaceStarted   += OnRaceStarted;
                 _race.RaceCelebrationStarted += OnRaceCelebrationStarted;
                 _race.RaceFinished  += OnRaceFinished;
+                if (_race.player != null) _race.player.FellOff += OnPlayerFell;
                 _subscribed = true;
                 // hide the controls and pause until the race countdown starts (real game).
                 // In the standalone sandbox (no RaceManager) leave them visible.
                 SetControlsVisible(false);
                 SetPauseVisible(false);
+            }
+
+            // Restarted run: fade the opening black overlay back in to reveal the start line.
+            if (FadeInOnStart)
+            {
+                FadeInOnStart = false;
+                StartCoroutine(UIFx.Fade(UIFx.EnsureFadeOverlay(_root), 1f, 0f, fadeDuration));
             }
         }
 
@@ -140,6 +172,7 @@ namespace Mixtape.UITK
                 _race.RaceStarted   -= OnRaceStarted;
                 _race.RaceCelebrationStarted -= OnRaceCelebrationStarted;
                 _race.RaceFinished  -= OnRaceFinished;
+                if (_race.player != null) _race.player.FellOff -= OnPlayerFell;
                 _subscribed = false;
             }
         }
@@ -211,8 +244,10 @@ namespace Mixtape.UITK
         {
             if (_countdown == null) return;
             SetPauseVisible(true);
-            StopAllCoroutines();
-            StartCoroutine(CountdownPop(n));
+            // Stop only the previous countdown pop — StopAllCoroutines here would also kill the
+            // fade-in that runs on a restarted run (the countdown fires on the same first frame).
+            if (_countdownCo != null) StopCoroutine(_countdownCo);
+            _countdownCo = StartCoroutine(CountdownPop(n));
         }
 
         private IEnumerator CountdownPop(int n)
@@ -265,19 +300,31 @@ namespace Mixtape.UITK
             SetControlsVisible(false);
             SetPauseVisible(false);
             SetHidden(_scorePill, true);
+            SetHidden(_rankPill, true);
+            SetHidden(_countdown, true);
 
-            // Real run stats from RaceScore: placement bonus + stars + coin reward were computed in
-            // RaceManager.FinishRace(). Coins scale with score and are paid on every placement.
+            // The run still counts: placement bonus + stars + coin reward were computed in
+            // RaceManager.FinishRace(); pay the coins out even though no results panel is shown.
             var s = _race != null ? _race.Score : null;
             int reward = s != null ? s.Coins : 0;
             if (reward > 0) GameManager.Instance?.AddCoins(reward);
 
-            SetActive(levelCompleteUI, true);
-            var lc = levelCompleteUI != null ? levelCompleteUI.GetComponent<LevelCompleteView>() : null;
-            if (s != null)
-                lc?.SetResults(won, s.Stars, s.Score, s.BestCombo, s.TricksLanded, s.Distance / 1000f, reward);
-            else
-                lc?.SetResults(won, won ? 3 : 1, 0, 0, 0, 0f, reward);
+            // No Level Complete panel: cut the whole screen to black, then restart at the start
+            // line — the freshly loaded HUD opens black and fades back in (see FadeInOnStart).
+            StartCoroutine(FadeOutAndRestart());
+        }
+
+        private IEnumerator FadeOutAndRestart()
+        {
+            if (finishHold > 0f) yield return new WaitForSecondsRealtime(finishHold);
+
+            yield return UIFx.Fade(UIFx.EnsureFadeOverlay(_root), 0f, 1f, fadeDuration);
+
+            // Restart the Game scene directly (no Loading screen): the load freeze is hidden behind
+            // the black overlay, and the next HUD opens black + fades in for a seamless cut.
+            FadeInOnStart = true;
+            Mixtape.UI.CutsceneController.SkipNextIntro = true;   // skip the opening intro on the restart
+            SceneFlow.LoadDirect(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
 
         // ---------- pause ----------
@@ -296,6 +343,31 @@ namespace Mixtape.UITK
         {
             _paused = false;
             SetActive(pauseUI, false);
+            Time.timeScale = 1f;
+        }
+
+        // ---------- fell off the track ----------
+        private void OnPlayerFell()
+        {
+            // freeze the run and offer Resume(ad) / Restart / Home
+            Time.timeScale = 0f;
+            SetControlsVisible(false);
+            SetPauseVisible(false);
+            SetActive(resumeUI, true);
+        }
+
+        // Watch-ad → respawn at the fall point and keep racing.
+        private void ResumeFromFall()
+        {
+            var p = _race != null ? _race.player : null;
+            if (p != null)
+            {
+                var respawn = p.GetComponent<SkaterRespawn>();
+                if (respawn != null) respawn.Respawn(0);   // back onto the nearest checkpoint
+            }
+            SetActive(resumeUI, false);
+            SetControlsVisible(true);
+            SetPauseVisible(true);
             Time.timeScale = 1f;
         }
 
@@ -320,6 +392,21 @@ namespace Mixtape.UITK
                     if (ok && _race != null && _race.player != null) _race.player.ApplyBoost(2.2f, 4f);
                     SetActive(adRewardUI, false);
                 });
+
+            var resume = resumeUI != null ? resumeUI.GetComponent<ResumeView>() : null;
+            if (resume != null)
+            {
+                // watch ad → continue from the fall point; only resume if the ad actually completed
+                resume.onResumeAd = () => AdManager.ShowRewarded("fall_resume", ok => { if (ok) ResumeFromFall(); });
+                // restart the race from the start, skipping the cutscene
+                resume.onRestart = () =>
+                {
+                    Time.timeScale = 1f;
+                    Mixtape.UI.CutsceneController.SkipNextIntro = true;
+                    GameManager.Instance?.ReloadCurrent();
+                };
+                resume.onHome = () => { Time.timeScale = 1f; GameManager.Instance?.LoadMainMenu(); };
+            }
         }
 
         // Trigger the player's trick jump (jump + board kickflip). Null-guarded for the sandbox.

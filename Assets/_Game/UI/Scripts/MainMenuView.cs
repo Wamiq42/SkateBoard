@@ -63,6 +63,13 @@ namespace Mixtape.UITK
             SetHidden(_exitPopup, true);
             RefreshCoins();
             RefreshToggles();
+
+            // gentle looping scale pulse on the two call-to-action buttons
+            StartCoroutine(UIFx.Pulse(new VisualElement[]
+            {
+                root.Q<Button>("play-btn"),
+                root.Q<Button>("watchad-btn"),
+            }));
         }
 
         // OnEnable can run BEFORE GameManager.Awake on a cold scene load (Unity doesn't
@@ -134,9 +141,13 @@ namespace Mixtape.UITK
         {
             if (GameManager.Instance != null)
             {
+                // One on/off control in the UI = master audio. Keep both flags in lockstep so
+                // music (gated on musicOn) and SFX (gated on soundOn) both follow the toggle.
                 GameManager.Instance.Data.soundOn = on;
+                GameManager.Instance.Data.musicOn = on;
                 GameManager.Instance.SaveData();
             }
+            AudioManager.Instance?.ApplySoundSetting();   // apply immediately to live audio
             RefreshToggles();
         }
 

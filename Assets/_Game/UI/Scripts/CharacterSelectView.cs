@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Mixtape.Core;
@@ -40,6 +41,9 @@ namespace Mixtape.UITK
         private GameObject _rig, _model;
         private RenderTexture _rt;
 
+        // preview animation: the character just dances (looping Macarena), rebuilt per character
+        private Animator _previewAnim;
+
         private int _index;
         private int _localSelected = -1; // sandbox-only selection memory
 
@@ -78,6 +82,9 @@ namespace Mixtape.UITK
             _index = GameManager.Instance != null ? GameManager.Instance.Data.selectedCharacter : 0;
             if (Count > 0) _index = Mathf.Clamp(_index, 0, Count - 1);
             ShowCurrent();
+
+            // gentle looping scale pulse on the Select + Watch-Ad buttons (harmless while hidden)
+            StartCoroutine(UIFx.Pulse(new VisualElement[] { _btnSelect, _btnWatch }));
         }
 
         private void OnDisable()
@@ -135,6 +142,7 @@ namespace Mixtape.UITK
             var def = DB.GetCharacter(_index);
 
             // spawn the model
+            _previewAnim = null;
             if (_model != null) Destroy(_model);
             if (def != null && def.modelPrefab != null && _mount != null)
             {
@@ -142,6 +150,7 @@ namespace Mixtape.UITK
                 _model.transform.localPosition = Vector3.zero;
                 _model.transform.localRotation = Quaternion.Euler(0f, previewYaw, 0f);
                 FrameModel();
+                SetupPreviewAnim();   // play idle->move->jump->move on this fresh model
             }
 
             // stats
@@ -156,6 +165,21 @@ namespace Mixtape.UITK
             Show(_btnBuy, !unlocked);
             Show(_btnWatch, !unlocked && (def == null || def.unlockableByAd));
             if (_buyPrice != null && def != null) _buyPrice.text = def.price.ToString("N0");
+        }
+
+        // Assign the dedicated preview controller (Resources/CharPreview) to the freshly spawned
+        // model and play the looping dance. The model has no controller of its own (the gameplay
+        // rider loads SkaterChar at runtime), so we wire one here just for the preview.
+        private void SetupPreviewAnim()
+        {
+            if (_model == null) return;
+            _previewAnim = _model.GetComponentInChildren<Animator>();
+            if (_previewAnim == null) _previewAnim = _model.AddComponent<Animator>();
+            _previewAnim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("CharPreview");
+            _previewAnim.applyRootMotion = false;
+            _previewAnim.cullingMode = AnimatorCullingMode.AlwaysAnimate;   // off-screen rig still animates
+            if (_previewAnim.runtimeAnimatorController != null)
+                _previewAnim.Play("Dance", 0, 0f);   // looping Macarena (clip loopTime = true)
         }
 
         private void FrameModel()

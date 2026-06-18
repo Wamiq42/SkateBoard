@@ -91,6 +91,13 @@ namespace Mixtape.Gameplay
                  "teleport back onto the route and keep racing. 0 = off.")]
         public float fallResetDepth = 8f;
 
+        [Header("Fall reporting")]
+        [Tooltip("When set (player only), falling off the route raises FellOff instead of auto-teleporting back, so a Resume popup can take over. AI leave this off and self-recover.")]
+        public bool reportFall = false;
+        /// <summary>Raised once when this skater falls off the route and <see cref="reportFall"/> is set.</summary>
+        public event Action FellOff;
+        private bool _fellReported;
+
         public bool IsGrounded { get; private set; }
         public float Speed => _speed;
 
@@ -171,6 +178,7 @@ namespace Mixtape.Gameplay
             transform.rotation = Quaternion.LookRotation(_heading, Vector3.up);
             _rb.linearVelocity = Vector3.zero;
             _speed = 0f; _steer = 0f; _airVelY = 0f; _jumpsUsed = 0; _airborne = false; _finishStopping = false;
+            _fellReported = false;   // re-arm fall reporting after a respawn/resume
         }
 
         /// <summary>Begin a controlled finish-line brake used while the celebration camera takes over.</summary>
@@ -237,6 +245,12 @@ namespace Mixtape.Gameplay
                 Vector3 rc = route.ClosestPoint(_rb.position, out Vector3 routeDir);
                 if (rc.y - _rb.position.y > fallResetDepth)
                 {
+                    // Player: hand the fall to the Resume popup instead of auto-recovering.
+                    if (reportFall)
+                    {
+                        if (!_fellReported) { _fellReported = true; FellOff?.Invoke(); }
+                        return;
+                    }
                     Teleport(rc + Vector3.up * 0.5f, routeDir);
                     return;
                 }

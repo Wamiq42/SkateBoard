@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.ivanmurzak.unity.mcp": "0.79.1",
+    "com.ivanmurzak.unity.mcp": "0.81.0",
     "com.ivanmurzak.unity.mcp.animation": "1.2.16",
     "com.ivanmurzak.unity.mcp.cinemachine": "1.0.2",
     "com.ivanmurzak.unity.mcp.particlesystem": "1.2.16",
@@ -11,6 +11,7 @@
     "com.unity.feature.development": "1.0.2",
     "com.unity.inputsystem": "1.18.0",
     "com.unity.multiplayer.center": "1.0.1",
+    "com.unity.recorder": "5.1.6",
     "com.unity.splines": "2.8.4",
     "com.unity.timeline": "1.8.10",
     "com.unity.ugui": "2.0.0",

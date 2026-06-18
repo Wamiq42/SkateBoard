@@ -36,10 +36,11 @@
     white-space: normal;
 }
 
-/* skip buttons (top-right) */
+/* skip button (top-right) — nudged a bit lower than the pause button so it sits
+   clear of the banner ad. */
 .cut-skip {
     position: absolute;
-    right: 48px; top: 130px;
+    right: 60px; top: 180px;
     width: 250px; height: 75px;
     background-image: url("../../../Art/UI/gameplay/skip.png");
     -unity-background-scale-mode: scale-to-fit;

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Mixtape.Core;
 
@@ -29,6 +30,12 @@ namespace Mixtape.UITK
         public GameObject characterUI;
         public GameObject boardUI;
 
+        [Header("Fake loading overlay (Menu -> Character)")]
+        [Tooltip("Optional full-screen fake Loading overlay (LoadingView in non-auto mode). Shown for menuToCharLoad seconds when PLAY is pressed before revealing Character Select.")]
+        public GameObject loadingUI;
+        [Tooltip("Seconds the fake loading screen shows on Menu -> Character.")]
+        public float menuToCharLoad = 1.4f;
+
         private void Awake()
         {
             Instance = this;
@@ -37,7 +44,7 @@ namespace Mixtape.UITK
             var chr  = characterUI != null ? characterUI.GetComponent<CharacterSelectView>() : null;
             var brd  = boardUI != null ? boardUI.GetComponent<BoardSelectView>() : null;
 
-            if (menu != null) menu.onPlay = () => Show(Screen.Character);
+            if (menu != null) menu.onPlay = PlayToCharacter;
             if (chr != null)
             {
                 chr.onProceed = () => Show(Screen.Board);
@@ -50,9 +57,30 @@ namespace Mixtape.UITK
             }
         }
 
-        private void Start() => Show(Screen.Menu);
+        private void Start()
+        {
+            if (loadingUI != null) loadingUI.SetActive(false);   // overlay hidden until PLAY
+            Show(Screen.Menu);
+        }
 
         private void OnDestroy() { if (Instance == this) Instance = null; }
+
+        // PLAY: flash the fake loading screen, then reveal Character Select. Falls back to an
+        // instant swap if no overlay is wired (e.g. the standalone sandbox).
+        private void PlayToCharacter()
+        {
+            if (loadingUI != null && menuToCharLoad > 0f) StartCoroutine(LoadThenShow(Screen.Character));
+            else Show(Screen.Character);
+        }
+
+        private IEnumerator LoadThenShow(Screen screen)
+        {
+            loadingUI.SetActive(true);   // opaque full-screen loader covers the menu while it "loads"
+            float t = 0f;
+            while (t < menuToCharLoad) { t += Time.unscaledDeltaTime; yield return null; }
+            Show(screen);                // bring the target up behind the overlay…
+            loadingUI.SetActive(false);  // …then drop the overlay (no menu flash)
+        }
 
         public void Show(Screen screen)
         {

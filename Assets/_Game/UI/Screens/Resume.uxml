@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Game/UI/Styles/mixtape.uss" />
+    <Style src="project://database/Assets/_Game/UI/Screens/Resume.uss" />
+    <ui:VisualElement name="root" class="screen">
+        <ui:VisualElement class="scrim">
+            <ui:VisualElement class="resume-panel">
+                <ui:Label text="YOU FELL!" class="resume-title" />
+                <ui:VisualElement class="resume-stack">
+                    <!-- watch an ad to resume from the fall point (ad badge in the corner) -->
+                    <ui:Button name="resume-ad" class="sprite-btn resume-btn resume-resume">
+                        <ui:VisualElement class="resume-ad-badge" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button name="resume-restart" class="sprite-btn resume-btn resume-restart" />
+                    <ui:Button name="resume-home"    class="sprite-btn resume-btn resume-home" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
